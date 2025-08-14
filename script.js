@@ -328,9 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Shine effect
       setTimeout(() => {
-        specialSquare.style.boxShadow = "0 0 30px 15px rgba(0, 123, 255, 0.8)";
+        specialSquare.style.boxShadow = "0 0 30px 15px rgba(255, 255, 255, 0.8)";
         setTimeout(() => {
-          specialSquare.style.boxShadow = "0 0 15px rgba(0, 123, 255, 0.8)";
+          specialSquare.style.boxShadow = "0 0 15px rgba(255, 255, 255, 0.8)";
 
           // Step 1: Expand width symmetrically
           setTimeout(() => {
@@ -352,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Step 3: Expand height and change to header
                 setTimeout(() => {
                   specialSquare.style.height = "60px";
-                  specialSquare.style.background = "linear-gradient(135deg, #2c3e50, #34495e)";
+                  specialSquare.style.background = "white";
                   specialSquare.style.borderRadius = "0";
 
                   // Show header and content, fade out special square
@@ -403,7 +403,7 @@ function openPopup(title, description, buttonRect) {
 
   popup.classList.add('show');
   setTimeout(() => {
-    popupSquare.style.boxShadow = '0 0 30px 15px rgba(0, 123, 255, 0.8)';
+    popupSquare.style.boxShadow = '0 0 30px 15px rgba(255, 255, 255, 0.8)';
     setTimeout(() => {
       popupSquare.style.boxShadow = 'none';
       popupSquare.style.width = '500px';
