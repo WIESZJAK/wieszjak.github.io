@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>W Loader — WIESZJAK design</title>
+  <style>
+    :root{
+      --light-bg:#ffffff;
+      --light-fg:#111827;
+      --dark-bg-1:#0b1020;
+      --dark-bg-2:#172031;
+      --accent:#ffd166;
+      --muted:rgba(17,24,39,0.6);
+    }
+
+    html { scroll-behavior: smooth; }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--light-bg);color:var(--light-fg);transition:background 600ms ease,color 400ms ease; }
+    body.dark{background: radial-gradient(circle at 30% 20%, var(--dark-bg-1), var(--dark-bg-2)); color: #f8fafc}
+
+    .page { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow-x:hidden; }
+
+    /* HERO centered */
+    .hero { width:100%; height:100vh; display:flex; align-items:center; justify-content:center; position:relative; box-sizing:border-box; padding: 40px 20px; }
+    .hero.hidden-hero{ display:none; }
+
+    .logo-wrap { width:420px; max-width:92vw; height:340px; position:relative; display:flex; align-items:center; justify-content:center; z-index:10; }
+
+    svg { width:100%; height:auto; overflow:visible; display:block; }
+
+    .stroke{ stroke:var(--light-fg); stroke-width:18; stroke-linecap:round; fill:none; transition:stroke 400ms ease; }
+    body.dark .stroke{ stroke:#f8fafc; }
+
+    .origin-dot{ opacity:0; }
+
+    /* brand text styles: slightly larger and lower by 2px */
+    .brand{
+      font-weight:400;
+      font-size:32px; /* increased */
+      letter-spacing:0.04em;
+      fill:var(--light-fg);
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity 700ms cubic-bezier(.2,.9,.3,1), transform 700ms cubic-bezier(.2,.9,.3,1);
+      pointer-events:none;
+    }
+    body.dark .brand { fill: #f8fafc; }
+
+    /* CTA wrapper centered under the W; column layout so brand & button stack perfectly centered */
+    .cta-wrap { position:absolute; left:50%; transform:translateX(-50%); bottom:22px; text-align:center; pointer-events:none; width:auto; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; }
+    #cta { pointer-events:auto; background:transparent; border:0; cursor:pointer; padding:8px; border-radius:8px; color:var(--light-fg); transition:transform .25s ease, opacity .35s ease; opacity:0; display:inline-flex; align-items:center; justify-content:center; }
+    #cta svg{ width:40px; height:40px; display:block; stroke:currentColor; }
+    #cta.visible{ opacity:1; }
+    body.dark #cta{ color: #f8fafc; }
+
+    .brand-svg { pointer-events:none; display:block; }
+
+    .gallery { width:100%; max-width:920px; margin:40px auto 120px; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:16px; align-items:center; justify-content:center; z-index:1; background:transparent; position:relative; }
+
+    .card { width:100%; max-width:720px; background:rgba(255,255,255,0.98); border-radius:12px; padding:18px; box-shadow:0 8px 30px rgba(15,23,42,0.08); opacity:0; transform:translateY(18px); transition:transform .7s cubic-bezier(.2,.9,.3,1), opacity .7s ease; }
+    body.dark .card{ background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03)); box-shadow:0 10px 40px rgba(2,6,23,0.5); }
+
+    .card img{ width:100%; border-radius:8px; display:block; }
+    .card h3{ margin:10px 0 0; }
+    .card p{ margin:6px 0 0; color:var(--muted); }
+
+    /* gallery nav arrows (outside box) */
+    .gallery-nav{ position:absolute; top:50%; transform:translateY(-50%); background:transparent; border:0; font-size:36px; cursor:pointer; color:var(--light-fg); padding:12px; border-radius:10px; transition:background .2s ease, color .2s ease; }
+    .gallery-nav:hover{ background:rgba(0,0,0,0.06); }
+    .gallery-nav.left{ left:calc(50% - 380px); } /* outside left of card (card centered ~720px) */
+    .gallery-nav.right{ right:calc(50% - 380px); }
+    body.dark .gallery-nav{ color:#f8fafc; }
+
+    /* back-to-top button - more visible */
+    #backTop{ position:fixed; right:18px; bottom:18px; background:var(--accent); color:#111827; border-radius:12px; padding:10px 12px; cursor:pointer; display:none; z-index:120; box-shadow:0 8px 20px rgba(0,0,0,0.25); font-weight:700; }
+
+    /* inline back button inside gallery */
+    .gallery-top-controls{ width:100%; max-width:920px; display:flex; justify-content:flex-end; align-items:center; pointer-events:auto; }
+    #backInline{ background:transparent; border:0; cursor:pointer; padding:6px 10px; border-radius:8px; display:none; }
+
+    @media (max-width:820px){
+      .gallery-nav.left{ left:8px; }
+      .gallery-nav.right{ right:8px; }
+      .gallery-nav{ font-size:28px; padding:10px; }
+    }
+    @media (max-width:520px){ .logo-wrap{ width:320px; height:260px; } .stroke{ stroke-width:14; } #cta svg{ width:32px; height:32px; } .brand{ font-size:16px } .brand-svg{ width:260px } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero" id="topHero">
+      <div class="logo-wrap" id="logoWrap" aria-hidden="false">
+        <svg viewBox="0 0 420 340" preserveAspectRatio="xMidYMid meet" id="logoSVG">
+          <circle id="o1" class="origin-dot" cx="-60" cy="-40" r="3" />
+          <circle id="o2" class="origin-dot" cx="480" cy="-30" r="3" />
+          <circle id="o3" class="origin-dot" cx="-80" cy="380" r="3" />
+          <circle id="o4" class="origin-dot" cx="520" cy="420" r="3" />
+
+          <path id="s1" class="stroke" d="M -60 -40 L -60 -40" />
+          <path id="s2" class="stroke" d="M 480 -30 L 480 -30" />
+          <path id="s3" class="stroke" d="M -80 380 L -80 380" />
+          <path id="s4" class="stroke" d="M 520 420 L 520 420" />
+        </svg>
+
+        <div class="cta-wrap" aria-hidden="false">
+          <svg class="brand-svg" id="brandSVG" width="320" height="80" viewBox="0 0 420 80" style="overflow:visible;">
+            <!-- moved slightly lower: y=38 and y=62 (+2px) to sit inside W; lighter weight and slightly larger -->
+            <text id="brandText" class="brand lively" x="210" y="38" text-anchor="middle">WIESZJAK</text>
+            <text id="brandSub" class="brand lively" x="210" y="62" text-anchor="middle" style="font-size:13px">design</text>
+          </svg>
+
+          <button id="cta" aria-label="Przejdź do galerii" title="Przejdź do galerii">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path d="M12 5v14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M19 12l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="gallery" id="gallery" aria-label="Galeria">
+      <div class="gallery-top-controls"><button id="backInline" title="Powrót na górę">⬆</button></div>
+
+      <!-- gallery nav outside the card -->
+      <button class="gallery-nav left" id="galleryPrev" aria-label="Poprzednie">❮</button>
+      <button class="gallery-nav right" id="galleryNext" aria-label="Następne">❯</button>
+
+      <div class="card lively" id="card">
+        <img id="cardImg" src="https://picsum.photos/900/500?random=7" alt="Random artwork" />
+        <h3 id="cardTitle">Random Image Title</h3>
+        <p id="cardDesc">Krótki opis przykładowego dzieła. Kliknij strzałkę, żeby tu zjechać. Tutaj możesz wstawić własne prace — to tylko demo.</p>
+      </div>
+    </main>
+  </div>
+
+  <div id="backTop" aria-hidden="true" title="Powrót na górę">⬆</div>
+
+  <script>
+    function spring({from, to, stiffness = 0.12, damping = 0.82, onUpdate, onComplete}){
+      let x = from; let vx = 0; let last = performance.now(); let active = true;
+      function step(now){
+        const dt = Math.min(32, now - last); last = now;
+        const force = (to - x) * stiffness;
+        vx += force * (dt/16);
+        vx *= Math.pow(damping, dt/16);
+        x += vx * (dt/16);
+        if(onUpdate) onUpdate(x);
+        if(active && (Math.abs(vx) > 0.001 || Math.abs(to - x) > 0.001)) requestAnimationFrame(step);
+        else { active = false; if(onUpdate) onUpdate(to); if(onComplete) onComplete(); }
+      }
+      requestAnimationFrame(step);
+      return ()=> active = false;
+    }
+
+    const s1 = document.getElementById('s1');
+    const s2 = document.getElementById('s2');
+    const s3 = document.getElementById('s3');
+    const s4 = document.getElementById('s4');
+    const cta = document.getElementById('cta');
+    const brandText = document.getElementById('brandText');
+    const brandSub = document.getElementById('brandSub');
+    const gallery = document.getElementById('gallery');
+    const card = document.getElementById('card');
+    const cardImg = document.getElementById('cardImg');
+    const backTop = document.getElementById('backTop');
+    const backInline = document.getElementById('backInline');
+    const hero = document.getElementById('topHero');
+    const galleryPrev = document.getElementById('galleryPrev');
+    const galleryNext = document.getElementById('galleryNext');
+
+    const targets = {
+      s1: {x1: 60, y1: 60, x2: 140, y2: 260},
+      s2: {x1: 140, y1: 260, x2: 210, y2: 60},
+      s3: {x1: 210, y1: 60, x2: 280, y2: 260},
+      s4: {x1: 280, y1: 260, x2: 360, y2: 60}
+    };
+
+    function setPath(el, x1,y1,x2,y2){ el.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`); }
+
+    function wiggleDynamic(current, target, baseAmp){
+      const dist = Math.abs(target - current);
+      const amp = Math.max(0, Math.min(baseAmp, dist * 0.08));
+      return current + Math.sin(performance.now()*0.007 + Math.random()*2) * amp;
+    }
+
+    function animateStroke(el, to, opts){
+      opts = opts || {};
+      const delay = opts.delay || 0;
+      const stiffness = opts.stiffness || 0.12;
+      const damping = opts.damping || 0.82;
+      const wig = opts.wig || 0;
+
+      setTimeout(()=>{
+        const d = el.getAttribute('d').match(/M\s*([\d.-]+)\s*([\d.-]+)\s*L\s*([\d.-]+)\s*([\d.-]+)/i);
+        let x1 = parseFloat(d[1]), y1 = parseFloat(d[2]), x2 = parseFloat(d[3]), y2 = parseFloat(d[4]);
+
+        spring({from:x1, to:to.x1, stiffness:stiffness, damping:damping, onUpdate: (v)=>{ x1 = v; const nx = wig ? wiggleDynamic(x1,to.x1,wig) : x1; setPath(el, nx, y1, x2, y2); }});
+        spring({from:y1, to:to.y1, stiffness:stiffness*1.05, damping:damping*0.96, onUpdate: (v)=>{ y1 = v; const ny = wig ? wiggleDynamic(y1,to.y1,wig) : y1; setPath(el, x1, ny, x2, y2); }});
+        spring({from:x2, to:to.x2, stiffness:stiffness*1.02, damping:damping, onUpdate: (v)=>{ x2 = v; const nx2 = wig ? wiggleDynamic(x2,to.x2,wig) : x2; setPath(el, x1, y1, nx2, y2); }});
+        spring({from:y2, to:to.y2, stiffness:stiffness*1.01, damping:damping*0.98, onUpdate: (v)=>{ y2 = v; const ny2 = wig ? wiggleDynamic(y2,to.y2,wig) : y2; setPath(el, x1, y1, x2, ny2); }});
+      }, delay);
+    }
+
+    // launch sequence
+    animateStroke(s1, targets.s1, {delay: 120, stiffness:0.16, damping:0.78, wig:5});
+    animateStroke(s2, targets.s2, {delay: 420, stiffness:0.14, damping:0.8, wig:4});
+    animateStroke(s3, targets.s3, {delay: 860, stiffness:0.145, damping:0.82, wig:3});
+    animateStroke(s4, targets.s4, {delay: 1280, stiffness:0.16, damping:0.8, wig:4});
+
+    function finalize(){
+      // snap exact coordinates to remove any 1-2px deviation
+      setPath(s1, targets.s1.x1, targets.s1.y1, targets.s1.x2, targets.s1.y2);
+      setPath(s2, targets.s2.x1, targets.s2.y1, targets.s2.x2, targets.s2.y2);
+      setPath(s3, targets.s3.x1, targets.s3.y1, targets.s3.x2, targets.s3.y2);
+      setPath(s4, targets.s4.x1, targets.s4.y1, targets.s4.x2, targets.s4.y2);
+
+      // flip to dark mode
+      document.body.classList.add('dark');
+
+      // reveal brand and CTA robustly
+      try{
+        brandText.style.opacity = '1';
+        brandText.style.transform = 'translateY(0)';
+        brandText.setAttribute('opacity', '1');
+      }catch(e){}
+      setTimeout(()=>{
+        try{ brandSub.style.opacity = '1'; brandSub.style.transform = 'translateY(0)'; brandSub.setAttribute('opacity','1'); }catch(e){}
+      }, 220);
+
+      // show CTA
+      cta.classList.add('visible'); cta.style.opacity = '1'; cta.style.pointerEvents = 'auto'; cta.style.display = 'inline-flex';
+    }
+
+    setTimeout(finalize, 2200);
+
+    // CTA -> scroll to gallery
+    function waitForScrollTo(targetY, cb){
+      const check = ()=>{
+        const cur = window.scrollY || window.pageYOffset;
+        if(Math.abs(cur - targetY) < 6 || (window.innerHeight + cur) >= (document.body.scrollHeight - 2)){
+          cb();
+        } else requestAnimationFrame(check);
+      };
+      requestAnimationFrame(check);
+    }
+
+    cta.addEventListener('click', ()=>{
+      const targetY = gallery.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({top: targetY, behavior: 'smooth'});
+      // wait until scroll reaches gallery, then hide hero so nothing covers content
+      waitForScrollTo(targetY, ()=>{
+        hero.classList.add('hidden-hero');
+        // reveal card
+        card.style.transform='translateY(0)'; card.style.opacity=1;
+        // show inline back button and global backTop
+        backInline.style.display = 'inline-block';
+        backTop.style.display = 'block';
+      });
+    });
+    cta.tabIndex = 0; cta.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') cta.click(); });
+
+    // back buttons
+    function showHeroAndScrollTop(){
+      hero.classList.remove('hidden-hero');
+      document.getElementById('topHero').scrollIntoView({behavior:'smooth'});
+      // hide gallery back inline after scroll
+      setTimeout(()=>{ backInline.style.display = 'none'; backTop.style.display = 'none'; }, 600);
+    }
+    backTop.addEventListener('click', showHeroAndScrollTop);
+    backInline.addEventListener('click', showHeroAndScrollTop);
+
+    // Gallery carousel implementation (left/right arrows)
+    const images = [
+      'https://picsum.photos/900/500?random=7',
+      'https://picsum.photos/900/500?random=8',
+      'https://picsum.photos/900/500?random=9'
+    ];
+    let current = 0;
+    function showImage(idx){
+      current = (idx + images.length) % images.length;
+      cardImg.style.opacity = 0.25;
+      setTimeout(()=>{ cardImg.src = images[current]; cardImg.style.opacity = 1; }, 160);
+    }
+    galleryPrev.addEventListener('click', ()=> showImage(current - 1));
+    galleryNext.addEventListener('click', ()=> showImage(current + 1));
+
+    // scroll detector: if user scrolls manually into gallery, ensure hero hides and buttons appear
+    function checkScroll(){
+      const cur = window.scrollY || window.pageYOffset;
+      if(cur >= (gallery.offsetTop - window.innerHeight*0.25)){
+        hero.classList.add('hidden-hero');
+        backInline.style.display = 'inline-block';
+        backTop.style.display = 'block';
+        card.style.opacity = 1; card.style.transform='translateY(0)';
+      } else {
+        hero.classList.remove('hidden-hero');
+        backInline.style.display = 'none';
+        backTop.style.display = 'none';
+      }
+    }
+    window.addEventListener('scroll', checkScroll); checkScroll();
+
+    window.addEventListener('resize', ()=>{ if(window.scrollY < window.innerHeight*0.2) hero.classList.remove('hidden-hero'); });
+  </script>
+</body>
+</html>
