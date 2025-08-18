@@ -12,7 +12,7 @@
       --dark: #212121;
       --darker: #1a1a1a;
       --light: #f8f9fa;
-      --silver: rgba(192, 192, 192, 0.5);
+      --silver: rgba(255, 255, 255, 0.05); /* 5% opacity */
     }
     
     * {
@@ -58,7 +58,6 @@
       border-radius: 4px;
       transform-origin: top;
       animation-fill-mode: forwards;
-      box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
     }
     
     /* Fixed positions for proper W shape with bounce effect */
@@ -101,7 +100,7 @@
       100% { height: 160px; }
     }
     
-    /* Horizontal line animation */
+    /* Horizontal line animation - fixed for all screen sizes */
     .horizontal-line {
       position: absolute;
       bottom: 20px;
@@ -131,7 +130,7 @@
       visibility: visible;
     }
     
-    /* Header with bottom border */
+    /* Header with bottom border at 5% opacity */
     .navbar {
       background: rgba(33, 33, 33, 0.95) !important;
       backdrop-filter: blur(10px);
@@ -201,6 +200,60 @@
       position: relative;
       max-width: 800px;
       margin: 0 auto;
+    }
+    
+    /* W stays visible after animation */
+    .final-w {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      margin: 0 auto 30px;
+    }
+    
+    .static-w-line {
+      position: absolute;
+      width: 8px;
+      background: var(--primary);
+      border-radius: 4px;
+    }
+    
+    .static-w-line1 {
+      left: 40px;
+      top: 20px;
+      height: 160px;
+      transform: rotate(-25deg);
+    }
+    
+    .static-w-line2 {
+      left: 172px;
+      top: 20px;
+      height: 160px;
+      transform: rotate(25deg);
+    }
+    
+    .static-w-line3 {
+      left: 172px;
+      top: 20px;
+      height: 160px;
+      transform: rotate(-25deg);
+    }
+    
+    .static-w-line4 {
+      left: 303px;
+      top: 20px;
+      height: 160px;
+      transform: rotate(25deg);
+    }
+    
+    .static-horizontal-line {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      height: 3px;
+      background: linear-gradient(to right, transparent, var(--primary), transparent);
+      border-radius: 2px;
     }
     
     .brand-title {
@@ -461,7 +514,15 @@
       }
       
       .horizontal-line {
-        width: 250px !important;
+        animation: expandLineMobile 1s ease 2.2s forwards;
+      }
+      
+      .static-horizontal-line {
+        width: 250px;
+      }
+      
+      .final-w {
+        transform: scale(0.8);
       }
       
       .navbar-collapse {
@@ -470,6 +531,11 @@
         border-radius: 10px;
         margin-top: 10px;
       }
+    }
+    
+    @keyframes expandLineMobile {
+      0% { width: 0; }
+      100% { width: 250px; }
     }
   </style>
 </head>
@@ -508,6 +574,15 @@
     <section id="hero">
       <div id="particles-js"></div>
       <div class="hero-content">
+        <!-- Static W that stays after animation -->
+        <div class="final-w">
+          <div class="static-w-line static-w-line1"></div>
+          <div class="static-w-line static-w-line2"></div>
+          <div class="static-w-line static-w-line3"></div>
+          <div class="static-w-line static-w-line4"></div>
+          <div class="static-horizontal-line"></div>
+        </div>
+        
         <h1 class="brand-title">WIESZJAK</h1>
         <h2 class="brand-subtitle">design</h2>
         <p class="hero-description">Creative professional showcasing innovative design solutions and development expertise</p>
@@ -862,13 +937,7 @@
       
       // Step 1: W animation completes after 3 seconds
       setTimeout(() => {
-        // Add glow effect to W
-        const wContainer = document.querySelector('.w-container');
-        if (wContainer) {
-          wContainer.classList.add('w-glow');
-        }
-
-        // Step 2: After glow, show main content
+        // Step 2: After animation, show main content
         setTimeout(() => {
           loader.style.opacity = '0';
           loader.style.visibility = 'hidden';
@@ -892,4 +961,4 @@
     });
   </script>
 </body>
-</html>ś
+</html>
