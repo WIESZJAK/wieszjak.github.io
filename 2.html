@@ -42,7 +42,6 @@
       justify-content: center;
       align-items: center;
       z-index: 10000;
-      transition: opacity 1.5s ease;
     }
     
     .w-container {
@@ -50,7 +49,6 @@
       width: 340px;
       height: 200px;
       transform-origin: center;
-      transition: all 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     }
     
     .w-line {
@@ -60,12 +58,12 @@
       border-radius: 4px;
       transform-origin: top;
       animation-fill-mode: forwards;
+      height: 0;
     }
     
     .w-line1 {
       left: 40px;
       top: 20px;
-      height: 0;
       transform: rotate(-25deg);
       animation: growLine 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.2s forwards;
     }
@@ -73,7 +71,6 @@
     .w-line2 {
       left: 172px;
       top: 20px;
-      height: 0;
       transform: rotate(25deg);
       animation: growLine 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) 0.6s forwards;
     }
@@ -81,7 +78,6 @@
     .w-line3 {
       left: 172px;
       top: 20px;
-      height: 0;
       transform: rotate(-25deg);
       animation: growLine 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) 1.0s forwards;
     }
@@ -89,7 +85,6 @@
     .w-line4 {
       left: 303px;
       top: 20px;
-      height: 0;
       transform: rotate(25deg);
       animation: growLine 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55) 1.4s forwards;
     }
@@ -121,23 +116,35 @@
     /* MAIN CONTENT */
     #main-content {
       opacity: 0;
-      visibility: hidden;
-      transition: all 1s ease;
+      transition: opacity 1s ease;
     }
     
     #main-content.show {
       opacity: 1;
-      visibility: visible;
     }
     
-    /* Header */
+    /* Header - 50px height on desktop, 60px on mobile/tablet */
     .navbar {
       background: rgba(33, 33, 33, 0.95) !important;
       backdrop-filter: blur(10px);
-      padding: 1rem 0;
+      padding: 0.75rem 0;
       transition: all 0.3s ease;
-      height: 60px;
+      height: 50px;
       border-bottom: 1px solid var(--silver);
+    }
+    
+    @media (max-width: 992px) {
+      .navbar {
+        height: 60px;
+        padding: 1rem 0;
+      }
+      
+      .navbar-collapse {
+        background: rgba(33, 33, 33, 0.95);
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 10px;
+      }
     }
     
     .navbar-brand, .nav-link {
@@ -151,29 +158,66 @@
       color: var(--primary) !important;
     }
     
+    /* Custom hamburger menu with animation */
     .navbar-toggler {
       border: none;
       padding: 0.25rem;
+      width: 30px;
+      height: 30px;
+      position: relative;
+      background: transparent;
     }
     
     .navbar-toggler:focus {
       box-shadow: none;
+      outline: none;
     }
     
     .navbar-toggler-icon {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: white;
+      position: relative;
       transition: all 0.3s ease;
-      width: 1.5em;
-      height: 1.5em;
+    }
+    
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: white;
+      left: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-toggler-icon::before {
+      top: -8px;
+    }
+    
+    .navbar-toggler-icon::after {
+      bottom: -8px;
     }
     
     .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M6 6L24 24M24 6L6 24'/%3e%3c/svg%3e");
+      background: transparent;
     }
     
-    /* Hero Section */
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+      transform: rotate(45deg);
+      top: 0;
+    }
+    
+    .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+      transform: rotate(-45deg);
+      bottom: 0;
+    }
+    
+    /* Hero Section - 110vh height with content positioned higher */
     #hero {
-      min-height: 100vh;
+      min-height: 110vh;
       background: linear-gradient(135deg, #212121, #2c3e50);
       display: flex;
       align-items: center;
@@ -183,6 +227,7 @@
       flex-direction: column;
       padding: 0 20px;
       text-align: center;
+      z-index: 2;
     }
     
     #particles-js {
@@ -199,6 +244,7 @@
       position: relative;
       max-width: 800px;
       margin: 0 auto;
+      transform: translateY(-30px);
     }
     
     /* W stays visible after animation */
@@ -207,6 +253,8 @@
       width: 300px;
       height: 200px;
       margin: 0 auto 30px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
     }
     
     .static-w-line {
@@ -326,29 +374,37 @@
       background-clip: text;
     }
     
-    /* Curve containers */
+    /* Curve containers - less curved */
     .curve-container {
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .curve {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 100px;
-      z-index: 1;
-    }
-    
-    .curve-container svg {
-      width: 100%;
       height: 100%;
     }
     
-    /* Work Section */
+    /* Work Section with solid dark gray background */
     #work {
-      background: var(--darker);
+      background: #2a2a2a;
       padding-bottom: 150px;
+      z-index: 3;
     }
     
     .work-item {
       margin-bottom: 4rem;
+      position: relative;
+      z-index: 2;
     }
     
     .work-image-container {
@@ -404,10 +460,23 @@
       box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
     }
     
-    /* Contact Section */
+    /* Process Section */
+    .process-section {
+      padding: 60px 0;
+      text-align: center;
+    }
+    
+    .process-title {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--primary);
+    }
+    
+    /* Contact Section - redesigned */
     #contact {
       background: linear-gradient(135deg, #34495e, #2c3e50);
-      padding-bottom: 150px;
+      padding-bottom: 80px;
+      z-index: 4;
     }
     
     .contact-info {
@@ -417,75 +486,71 @@
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       margin-bottom: 2rem;
-    }
-    
-    .contact-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      transition: all 0.3s ease;
-    }
-    
-    .contact-icon {
-      width: 50px;
-      height: 50px;
-      background: linear-gradient(45deg, var(--primary), #0056b3);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 1rem;
-      font-size: 1.2rem;
-    }
-    
-    .contact-form {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      padding: 2rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .form-control {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 10px;
-      color: white;
-      padding: 12px 15px;
-      margin-bottom: 1rem;
-    }
-    
-    .form-control:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--primary);
-      box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
-      color: white;
-    }
-    
-    .form-control::placeholder {
-      color: rgba(255, 255, 255, 0.7);
+      position: relative;
+      z-index: 2;
+      text-align: center;
     }
     
     .profile-image {
-      width: 150px;
-      height: 150px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      border: 4px solid rgba(255, 255, 255, 0.2);
+      border: 3px solid rgba(255, 255, 255, 0.2);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin-bottom: 1rem;
+    }
+    
+    .contact-name {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .contact-location {
+      color: rgba(255, 255, 255, 0.7);
       margin-bottom: 1.5rem;
     }
     
-    /* Footer */
+    .contact-details-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .social-link {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+    
+    .social-link:hover {
+      color: var(--primary);
+    }
+    
+    /* Footer - smaller height */
     footer {
       background: var(--darker);
       color: rgba(255, 255, 255, 0.7);
-      padding: 1.5rem 0;
+      padding: 1rem 0;
       text-align: center;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 5;
     }
     
     /* Modal Styling */
@@ -543,19 +608,24 @@
         transform: scale(0.8);
       }
       
-      .navbar-collapse {
-        background: rgba(33, 33, 33, 0.95);
-        padding: 15px;
-        border-radius: 10px;
-        margin-top: 10px;
-      }
-      
       .curve-container {
-        height: 70px;
+        height: 60px;
       }
       
       #work, #contact {
-        padding-bottom: 120px;
+        padding-bottom: 100px;
+      }
+      
+      #hero {
+        min-height: 100vh;
+      }
+      
+      .hero-content {
+        transform: translateY(-20px);
+      }
+      
+      .contact-details-grid {
+        grid-template-columns: 1fr;
       }
     }
     
@@ -622,8 +692,8 @@
       
       <!-- Curve container for hero section -->
       <div class="curve-container">
-        <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
-          <path id="curve-hero" d="M 0 0 L 1000 0 L 1000 100 Q 500 100 0 100 Z" fill="#2c3e50"></path>
+        <svg viewBox="0 0 1000 100" preserveAspectRatio="none" class="curve" id="curve-hero">
+          <path d="M 0 100 L 1000 100 L 1000 0 Q 500 30 0 0 Z" fill="#2a2a2a"></path>
         </svg>
       </div>
     </section>
@@ -694,8 +764,8 @@
       
       <!-- Curve container for work section -->
       <div class="curve-container">
-        <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
-          <path id="curve-work" d="M 0 0 L 1000 0 L 1000 100 Q 500 100 0 100 Z" fill="#1a1a1a"></path>
+        <svg viewBox="0 0 1000 100" preserveAspectRatio="none" class="curve" id="curve-work">
+          <path d="M 0 100 L 1000 100 L 1000 0 Q 500 30 0 0 Z" fill="#34495e"></path>
         </svg>
       </div>
     </section>
@@ -703,46 +773,39 @@
     <!-- Contact Section with Curve -->
     <section id="contact">
       <div class="container">
+        <!-- Process Section -->
+        <div class="process-section">
+          <h2 class="process-title"><<process>></h2>
+          <p class="text-center">My creative process for designing and developing websites will be described here.</p>
+        </div>
+        
         <h2 class="section-title">Get In Touch</h2>
 
         <div class="row justify-content-center">
-          <div class="col-lg-8">
+          <div class="col-lg-6">
             <div class="contact-info">
               <div class="text-center mb-4">
                 <img src="self1.jpg" class="profile-image" alt="Profile Picture">
-                <h3 class="mb-2">Paweł Pawula</h3>
-                <p class="text-muted">Designer & Developer</p>
-              </div>
-
-              <div class="contact-item">
-                <div class="contact-icon">📍</div>
-                <div class="contact-details">
-                  <h5>Location</h5>
-                  <p>Katowice, Poland</p>
+                <h3 class="contact-name">Paweł</h3>
+                <p class="contact-location">Poland</p>
+                
+                <div class="contact-details-grid">
+                  <div class="contact-detail">
+                    <i class="fas fa-phone"></i>
+                    <span>+48 516 179 979</span>
+                  </div>
+                  <div class="contact-detail">
+                    <i class="fas fa-envelope"></i>
+                    <span>festowe@gmail.com</span>
+                  </div>
                 </div>
-              </div>
-
-              <div class="contact-item">
-                <div class="contact-icon">📱</div>
-                <div class="contact-details">
-                  <h5>Phone</h5>
-                  <p>+48 516 179 979</p>
-                </div>
-              </div>
-
-              <div class="contact-item">
-                <div class="contact-icon">💼</div>
-                <div class="contact-details">
-                  <h5>GitHub</h5>
-                  <p><a href="https://github.com/wieszjak" target="_blank" style="color: #007bff; text-decoration: none;">github.com/wieszjak</a></p>
-                </div>
-              </div>
-
-              <div class="contact-item">
-                <div class="contact-icon">✉️</div>
-                <div class="contact-details">
-                  <h5>Email</h5>
-                  <p>festowe@gmail.com</p>
+                
+                <div class="social-links">
+                  <a href="https://github.com/wieszjak" class="social-link" target="_blank">GitHub</a>
+                  <span class="social-link">|</span>
+                  <a href="#" class="social-link" target="_blank">dA</a>
+                  <span class="social-link">|</span>
+                  <a href="#" class="social-link" target="_blank">LinkedIn</a>
                 </div>
               </div>
             </div>
@@ -752,8 +815,8 @@
       
       <!-- Curve container for contact section -->
       <div class="curve-container">
-        <svg viewBox="0 0 1000 100" preserveAspectRatio="none">
-          <path id="curve-contact" d="M 0 0 L 1000 0 L 1000 100 Q 500 100 0 100 Z" fill="#2c3e50"></path>
+        <svg viewBox="0 0 1000 100" preserveAspectRatio="none" class="curve" id="curve-contact">
+          <path d="M 0 100 L 1000 100 L 1000 0 Q 500 30 0 0 Z" fill="#1a1a1a"></path>
         </svg>
       </div>
     </section>
@@ -767,8 +830,143 @@
     </footer>
   </div>
 
-  <!-- Project Modals (remain the same as before) -->
-  <!-- ... -->
+  <!-- Project Modals -->
+  <div class="modal fade" id="project1Modal" tabindex="-1" aria-labelledby="project1ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="project1ModalLabel">E-Commerce Platform</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=500&q=80" class="img-fluid rounded mb-4" alt="E-Commerce Platform">
+          <h4>Project Details</h4>
+          <p>This e-commerce platform was built using React for the frontend and Node.js with Express for the backend. The database is MongoDB with Mongoose for data modeling.</p>
+          <p>Key features include:</p>
+          <ul>
+            <li>User authentication with JWT</li>
+            <li>Product catalog with filtering and search</li>
+            <li>Shopping cart functionality</li>
+            <li>Payment integration with Stripe</li>
+            <li>Order tracking system</li>
+          </ul>
+          <p>Technologies used: React, Redux, Node.js, Express, MongoDB, Mongoose, Stripe API</p>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="https://github.com/wieszjak/ecommerce-platform" target="_blank" class="btn btn-outline-primary">
+              <i class="fab fa-github me-2"></i>View on GitHub
+            </a>
+            <a href="#" class="btn btn-primary">Visit Live Project</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project 2 Modal -->
+  <div class="modal fade" id="project2Modal" tabindex="-1" aria-labelledby="project2ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="project2ModalLabel">Fitness Tracker App</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=500&q=80" class="img-fluid rounded mb-4" alt="Fitness App">
+          <h4>Project Details</h4>
+          <p>A mobile fitness application designed with a focus on user experience and motivation. The app includes workout tracking, progress visualization, and social features.</p>
+          <p>Key features include:</p>
+          <ul>
+            <li>Custom workout plans and tracking</li>
+            <li>Progress charts and statistics</li>
+            <li>Social challenges and leaderboards</li>
+            <li>Integration with health platforms</li>
+            <li>Personalized recommendations</li>
+          </ul>
+          <p>Technologies used: Figma, Adobe XD, SwiftUI, Kotlin, Firebase</p>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="https://github.com/wieszjak/fitness-app" target="_blank" class="btn btn-outline-primary">
+              <i class="fab fa-github me-2"></i>View on GitHub
+            </a>
+            <a href="#" class="btn btn-primary">View App Design</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project 3 Modal -->
+  <div class="modal fade" id="project3Modal" tabindex="-1" aria-labelledby="project3ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="project3ModalLabel">Brand Identity</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=500&q=80" class="img-fluid rounded mb-4" alt="Brand Identity">
+          <h4>Project Details</h4>
+          <p>Complete brand identity package for a tech startup, including logo design, color palette, typography, and marketing materials.</p>
+          <p>Key elements include:</p>
+          <ul>
+            <li>Modern logo design with multiple variations</li>
+            <li>Comprehensive style guide</li>
+            <li>Business card and letterhead designs</li>
+            <li>Social media templates</li>
+            <li>Product packaging design</li>
+          </ul>
+          <p>Technologies used: Illustrator, Photoshop, InDesign, After Effects</p>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="https://github.com/wieszjak/brand-identity" target="_blank" class="btn btn-outline-primary">
+              <i class="fab fa-github me-2"></i>View on GitHub
+            </a>
+            <a href="#" class="btn btn-primary">View Brand Assets</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Project 4 Modal -->
+  <div class="modal fade" id="project4Modal" tabindex="-1" aria-labelledby="project4ModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="project4ModalLabel">Data Analytics Dashboard</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&h=500&q=80" class="img-fluid rounded mb-4" alt="Dashboard">
+          <h4>Project Details</h4>
+          <p>Interactive data visualization dashboard for business intelligence, featuring real-time data, customizable widgets, and collaboration tools.</p>
+          <p>Key features include:</p>
+          <ul>
+            <li>Real-time data visualization</li>
+            <li>Customizable dashboard layout</li>
+            <li>Data filtering and drill-down capabilities</li>
+            <li>Collaborative annotation tools</li>
+            <li>Export functionality for reports</li>
+          </ul>
+          <p>Technologies used: Vue.js, D3.js, Python, Flask, PostgreSQL, WebSockets</p>
+          <div class="d-flex justify-content-between mt-4">
+            <a href="https://github.com/wieszjak/analytics-dashboard" target="_blank" class="btn btn-outline-primary">
+              <i class="fab fa-github me-2"></i>View on GitHub
+            </a>
+            <a href="#" class="btn btn-primary">View Live Dashboard</a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -840,14 +1038,17 @@
       });
     }
 
-    // Curve effect implementation
+    // Curve effect implementation with less pronounced curves
     function setupCurveEffect() {
       // Variables for curve sections
       const curveHero = document.getElementById("curve-hero");
       const curveWork = document.getElementById("curve-work");
       const curveContact = document.getElementById("curve-contact");
       
+      let lastKnownScrollPosition = 0;
       let ticking = false;
+      const defaultCurveValue = 30;
+      const curveRate = 5;
       
       // Curve effect function
       function updateCurves(scrollPos) {
@@ -856,11 +1057,14 @@
           const heroRect = heroSection.getBoundingClientRect();
           const heroHeight = heroRect.height;
           const heroVisibleHeight = Math.max(0, heroHeight - window.scrollY);
-          const curveValue = 100 + Math.min(50, Math.max(0, (heroHeight - heroVisibleHeight) / 2));
           
-          curveHero.setAttribute(
+          // Calculate curve value based on scroll position
+          const curveValue = defaultCurveValue + Math.min(70, Math.max(0, (heroHeight - heroVisibleHeight) / curveRate));
+          
+          // Update SVG path
+          curveHero.querySelector('path').setAttribute(
             "d",
-            "M 0 0 L 1000 0 L 1000 100 Q 500 " + curveValue + " 0 100 Z"
+            `M 0 100 L 1000 100 L 1000 0 Q 500 ${curveValue} 0 0 Z`
           );
         }
         
@@ -870,11 +1074,14 @@
           const workTop = workRect.top;
           const workHeight = workRect.height;
           const workScrollPos = Math.max(0, window.scrollY - workTop);
-          const curveValue = 100 + Math.min(50, Math.max(0, workScrollPos / 4));
           
-          curveWork.setAttribute(
+          // Calculate curve value based on scroll position
+          const curveValue = defaultCurveValue + Math.min(70, Math.max(0, workScrollPos / curveRate));
+          
+          // Update SVG path
+          curveWork.querySelector('path').setAttribute(
             "d",
-            "M 0 0 L 1000 0 L 1000 100 Q 500 " + curveValue + " 0 100 Z"
+            `M 0 100 L 1000 100 L 1000 0 Q 500 ${curveValue} 0 0 Z`
           );
         }
         
@@ -884,20 +1091,25 @@
           const contactTop = contactRect.top;
           const contactHeight = contactRect.height;
           const contactScrollPos = Math.max(0, window.scrollY - contactTop);
-          const curveValue = 100 + Math.min(50, Math.max(0, contactScrollPos / 4));
           
-          curveContact.setAttribute(
+          // Calculate curve value based on scroll position
+          const curveValue = defaultCurveValue + Math.min(70, Math.max(0, contactScrollPos / curveRate));
+          
+          // Update SVG path
+          curveContact.querySelector('path').setAttribute(
             "d",
-            "M 0 0 L 1000 0 L 1000 100 Q 500 " + curveValue + " 0 100 Z"
+            `M 0 100 L 1000 100 L 1000 0 Q 500 ${curveValue} 0 0 Z`
           );
         }
       }
       
       // Scroll Listener
       window.addEventListener("scroll", function() {
+        lastKnownScrollPosition = window.scrollY;
+        
         if (!ticking) {
           window.requestAnimationFrame(function() {
-            updateCurves(window.scrollY);
+            updateCurves(lastKnownScrollPosition);
             ticking = false;
           });
           ticking = true;
@@ -908,43 +1120,41 @@
       updateCurves(window.scrollY);
     }
 
-    // Main animation sequence with loader transformation
+    // Main animation sequence with improved loader transition
     function startAnimationSequence() {
       const loader = document.getElementById('loader');
       const mainContent = document.getElementById('main-content');
       const loaderW = document.getElementById('loader-w');
       const finalW = document.getElementById('final-w');
       
-      // Get final position of static W
-      const finalRect = finalW.getBoundingClientRect();
-      
-      // Step 1: W animation completes after 3 seconds
+      // Wait for W animation to complete (3.5 seconds total)
       setTimeout(() => {
-        // Transform loader to final position
-        loaderW.style.position = 'absolute';
-        loaderW.style.top = `${finalRect.top}px`;
-        loaderW.style.left = `${finalRect.left}px`;
-        loaderW.style.width = `${finalRect.width}px`;
-        loaderW.style.height = `${finalRect.height}px`;
-        loaderW.style.transform = 'none';
+        // First fade out the loader elements
+        loaderW.style.opacity = '0';
+        loaderW.style.transition = 'opacity 1s ease';
         
-        // Step 2: After transformation, fade out loader and show main content
+        // Then show static W in hero section
         setTimeout(() => {
-          loader.style.opacity = '0';
-          loader.style.visibility = 'hidden';
+          finalW.style.opacity = '1';
+          
+          // Then fade out the entire loader
           setTimeout(() => {
-            loader.style.display = 'none';
-            mainContent.classList.add('show');
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 1.5s ease';
             
-            // Initialize particles and smooth scrolling
+            // Finally show main content and remove loader
             setTimeout(() => {
+              loader.style.display = 'none';
+              mainContent.classList.add('show');
+              
+              // Initialize effects
               initParticles();
               setupSmoothScrolling();
               setupCurveEffect();
-            }, 300);
-          }, 1500);
-        }, 700);
-      }, 3000);
+            }, 1500);
+          }, 500);
+        }, 1000);
+      }, 3500);
     }
 
     // Start everything when DOM is loaded
