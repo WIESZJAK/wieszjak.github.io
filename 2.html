@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
+        --bg: #0f1115;
+  --panel: #141821;
+  --panel-2: #171c26;
+  --text: #e7ecf3;
+  --muted: #9aa7bd;
+  --accent: #7c9cff;   /* niebieski dla done */
+  --accent-2: #7ff0c6; /* gradient progress */
+  --ring: #27324a;
       --primary: #007bff;
       --dark: #212121;
       --darker: #1a1a1a;
@@ -129,7 +137,7 @@
       backdrop-filter: blur(10px);
       padding: 0.75rem 0;
       transition: all 0.3s ease;
-      height: 50px;
+      height: 35px;
       border-bottom: 1px solid var(--silver);
     }
     
@@ -825,7 +833,7 @@
     <footer>
       <div class="container">
         <p>&copy; 2025 WIESZJAK. All rights reserved.</p>
-        <p class="mt-2">Crafted with passion and attention to detail</p>
+
       </div>
     </footer>
   </div>
@@ -858,9 +866,6 @@
             <a href="#" class="btn btn-primary">Visit Live Project</a>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
       </div>
     </div>
   </div>
@@ -892,9 +897,6 @@
             </a>
             <a href="#" class="btn btn-primary">View App Design</a>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -961,9 +963,7 @@
             <a href="#" class="btn btn-primary">View Live Dashboard</a>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+      
       </div>
     </div>
   </div>
@@ -1151,10 +1151,10 @@
               initParticles();
               setupSmoothScrolling();
               setupCurveEffect();
-            }, 1500);
+            }, 200);
           }, 500);
-        }, 1000);
-      }, 3500);
+        }, 600);
+      }, 3350);
     }
 
     // Start everything when DOM is loaded
