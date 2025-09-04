@@ -1,2 +1,2 @@
 # wieszjak.github.io
-website
+website made in html,js,css support Responsive design
