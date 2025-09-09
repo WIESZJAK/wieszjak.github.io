@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Proces zamówienia — 2025</title>
+<style>
+:root{
+  --bg: #0f1115;
+  --panel: #141821;
+  --panel-2: #171c26;
+  --text: #e7ecf3;
+  --muted: #9aa7bd;
+  --accent: #7c9cff;   /* niebieski dla done */
+  --accent-2: #7ff0c6; /* gradient progress */
+  --ring: #27324a;
+}
+body{
+  margin:0; font:500 16px/1.5 system-ui,sans-serif;
+  background: var(--bg); color:var(--text);
+}
+.wrap{max-width:800px;margin:0 auto;padding:20px;}
+header{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+.lang-switch button{margin-left:8px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer;}
+.steps{display:flex; flex-direction:column; gap:14px;}
+.step{
+  position:relative;
+  display:grid; grid-template-columns:58px 1fr; gap:12px;
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--ring); border-radius:14px; padding:16px;
+  cursor:pointer; transition:transform .2s; overflow:hidden;
+  min-height:120px;
+}
+.step:hover{transform:translateY(-2px);}
+.step .icon{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:var(--panel-2);}
+.step .meta{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
+.step .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;background: rgba(127,240,198,.18); border:1px solid var(--ring); font-weight:700; color:var(--text);}
+.step.done{border-left:4px solid var(--accent);}
+.step.active{border-left:4px solid #78e08f; font-weight:600; background:linear-gradient(180deg,#1b2436,#242e46);}
+.step.active::before{
+  content:""; position:absolute; top:10px; right:10px;
+  width:12px; height:12px; border-radius:50%;
+  background:#78e08f; box-shadow:0 0 6px #78e08f;
+}
+.step.todo{border-left:4px solid #666; opacity:0.6; filter:grayscale(40%);}
+.desc{max-height:0; overflow:hidden; transition:max-height .4s ease, padding .4s ease; font-size:.95rem; line-height:1.3; margin-top:0;}
+.desc.open{max-height:500px; padding-top:6px;}
+.progress{position:relative; height:6px; background:var(--panel-2); border-radius:999px; overflow:hidden; margin-top:10px;}
+.progress > b{display:block; height:100%; width:var(--value,0%); background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition: width .3s;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 data-pl="Proces zamówienia — 2025" data-en="Order Process — 2025">Proces zamówienia — 2025</h1>
+    <div class="lang-switch">
+      <button onclick="switchLang('pl')">PL</button>
+      <button onclick="switchLang('en')">ENG</button>
+    </div>
+  </header>
+
+  <ol class="steps">
+    <!-- 1 -->
+    <li class="step done" onclick="toggleDesc(this)">
+      <div class="icon">1</div>
+      <div>
+        <div class="meta" data-pl="Pomysł" data-en="Idea">Pomysł</div>
+        <h3 class="title" data-pl="Inspiracja projektu" data-en="Project inspiration">Inspiracja projektu</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+          <p><s>- Stara koncepcja</s></p>
+          <p style="color:green">- Zatwierdzony pomysł</p>
+        </div>
+        <div class="progress"><b style="--value:10%"></b></div>
+      </div>
+    </li>
+    <!-- 2 -->
+    <li class="step active" onclick="toggleDesc(this)">
+      <div class="icon">2</div>
+      <div>
+        <div class="meta" data-pl="Brief" data-en="Brief">Brief</div>
+        <h3 class="title" data-pl="Onboarding klienta" data-en="Client onboarding">Onboarding klienta</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+          <p style="color:green">- Część danych już uzupełniona</p>
+          <p style="color:red">- Brakuje plików referencyjnych</p>
+        </div>
+        <div class="progress"><b style="--value:20%"></b></div>
+      </div>
+    </li>
+    <!-- 3 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">3</div>
+      <div>
+        <div class="meta" data-pl="Porozumienie" data-en="Agreement">Porozumienie</div>
+        <h3 class="title" data-pl="Zakres + kosztorys" data-en="Scope + pricing">Zakres + kosztorys</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+          <p><s>- Wstępny kosztorys</s></p>
+          <p style="color:red">- Oczekuje na potwierdzenie</p>
+        </div>
+        <div class="progress"><b style="--value:30%"></b></div>
+      </div>
+    </li>
+    <!-- 4 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">4</div>
+      <div>
+        <div class="meta" data-pl="Makieta" data-en="Wireframe">Makieta</div>
+        <h3 class="title" data-pl="Prosta wizualizacja UX" data-en="Basic UX mockup">Prosta wizualizacja UX</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+        </div>
+        <div class="progress"><b style="--value:40%"></b></div>
+      </div>
+    </li>
+    <!-- 5 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">5</div>
+      <div>
+        <div class="meta" data-pl="Projekt graficzny" data-en="Visual design">Projekt graficzny</div>
+        <h3 class="title" data-pl="UI i branding" data-en="UI & branding">UI i branding</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+          <p style="color:red">- Brak fontów firmowych</p>
+        </div>
+        <div class="progress"><b style="--value:50%"></b></div>
+      </div>
+    </li>
+    <!-- 6 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">6</div>
+      <div>
+        <div class="meta" data-pl="Akceptacja" data-en="Approval">Akceptacja</div>
+        <h3 class="title" data-pl="Feedback klienta" data-en="Client feedback">Feedback klienta</h3>
+        <div class="desc">
+          <p><s>- Pierwsza runda uwag</s></p>
+          <p style="color:green">- Wszystkie zmiany wdrożone</p>
+        </div>
+        <div class="progress"><b style="--value:60%"></b></div>
+      </div>
+    </li>
+    <!-- 7 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">7</div>
+      <div>
+        <div class="meta" data-pl="Kodowanie" data-en="Development">Kodowanie</div>
+        <h3 class="title" data-pl="Front + backend" data-en="Front + backend">Front + backend</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+        </div>
+        <div class="progress"><b style="--value:70%"></b></div>
+      </div>
+    </li>
+    <!-- 8 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">8</div>
+      <div>
+        <div class="meta" data-pl="Podgląd" data-en="Preview">Podgląd</div>
+        <h3 class="title" data-pl="Wersja testowa" data-en="Test version">Wersja testowa</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+        </div>
+        <div class="progress"><b style="--value:80%"></b></div>
+      </div>
+    </li>
+    <!-- 9 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">9</div>
+      <div>
+        <div class="meta" data-pl="Testy" data-en="Testing">Testy</div>
+        <h3 class="title" data-pl="QA + poprawki" data-en="QA + fixes">QA + poprawki</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+          <p style="color:red">- Błędy krytyczne do naprawy</p>
+        </div>
+        <div class="progress"><b style="--value:90%"></b></div>
+      </div>
+    </li>
+    <!-- 10 -->
+    <li class="step todo" onclick="toggleDesc(this)">
+      <div class="icon">10</div>
+      <div>
+        <div class="meta" data-pl="Uruchomienie" data-en="Launch">Uruchomienie</div>
+        <h3 class="title" data-pl="System online" data-en="System online">System online</h3>
+        <div class="desc">
+          <p>- Normalny tekst</p>
+          <p style="color:green">- Projekt gotowy 🎉</p>
+        </div>
+        <div class="progress"><b style="--value:100%"></b></div>
+      </div>
+    </li>
+  </ol>
+</div>
+
+<script>
+function toggleDesc(el){
+  const desc = el.querySelector('.desc');
+  desc.classList.toggle('open');
+}
+function switchLang(lang){
+  document.querySelectorAll('[data-pl]').forEach(el=>{
+    el.textContent = el.getAttribute('data-'+lang);
+  });
+}
+</script>
+</body>
+</html>
