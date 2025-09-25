@@ -150,6 +150,17 @@ header{display:flex; justify-content:space-between; align-items:center; margin-b
           <p>- Zmiana taktyki importu rekordów</p>
           <p>- Usunięcie błędnie zaimportowanych rekordów (6103)</p>
           <p>- Import rekordów poprzez SSH (chunkowanie)</p>
+          <p>- Wyodrebnienie 1000 linijek (chunk) do osobnego pliku w celu testowania</p>
+          <p style="color:red">- BLAD(zle formatowanie polskich znakow embeddings) plik uszkodzony.</p>
+          <p style="color:green">- Rekonstrukcja pliku(UTF-8) formatowania.</p>
+          <p style="color:red">- chunk 1000 linijek ukazuje, ze produkty nie sa w kolejnosci.</p>
+          <p>- Szukanie odpowiedniej metody kategoryzowania produktow.</p>
+          <p style="color:red">- PROBLEM(niektore produkty nie maja zadnej kategorii).</p>
+          <p>- Proba kategoryzowania na probce 1000 linijek:</p>
+          <p style="color:red">- Przy 1000 rekordow 485 to pozostale // prognoza: ZLE</p>
+          <p style="color:red">- Przy 10000 rekordow 4846 to pozostale // prognoza: ZLE</p>
+          <p>- Rozbicie 'pozostale' (4846) na podkategorie.</p>
+          <p>- Nieskategoryzowane w podkategoriach (NIEOKRESLONE): 3852</p>
           <p><s>- Import zakończony</s></p>
         </div>
         <div class="progress"><b style="--value:60%"></b></div>
@@ -221,6 +232,7 @@ function switchLang(lang){
 </script>
 </body>
 </html>
+
 
 
 
