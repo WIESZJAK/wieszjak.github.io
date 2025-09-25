@@ -87,7 +87,7 @@ header{display:flex; justify-content:space-between; align-items:center; margin-b
           <p>- Zebranie danych potrzebnych do stworzenia strony.</p>
           <p>- Zebranie plików oraz wytycznych potrzebnych do stworzenia strony.</p>
           <p style="color:green">- Uzyskano plik .API.</p>
-          <p style="color:red">- Plik .API nie zawiera zdjęć.</p>
+          <p style="color:red">- Plik .API nie zawiera wszystkich potrzebnych danych.</p>
           <p>- Zmiana taktyki implementacji API ze wzdlędu na ilość rekordów (800tyś~).</p>
           <p style="color:green">- Onboarding zakonczony.</p>
         </div>
@@ -121,32 +121,35 @@ header{display:flex; justify-content:space-between; align-items:center; margin-b
           <p style="color:green">- Kosztorys zaakceptowany.</p>
           <p>- Drobne poprawki i usprawnienia serwera (cache clear, ssh support, putty access)</p>
           <p style="color:green">- Kontakt z administracją hostingu w celu uzyskania informacji oraz usprawnienia hostingu/domeny.</p>
+          <p>- Pomysł zamiany brakujących danych z .API na globalne dane a nadrzędnych kategorii.</p>
         </div>
         <div class="progress"><b style="--value:40%"></b></div>
       </div>
     </li>
     <!-- 5 -->
-    <li class="step active" onclick="toggleDesc(this)">
+    <li class="step done" onclick="toggleDesc(this)">
       <div class="icon">5</div>
       <div>
         <div class="meta" data-pl="Projekt graficzny" data-en="Visual design">Projekt graficzny</div>
         <h3 class="title" data-pl="UI i branding" data-en="UI & branding">UI i branding</h3>
         <div class="desc">
           <p style="color:green">- Porozumienie odnośnie stylu sklepu(Woocomerce).</p>
-          <p style="color:red">- Brak fontów firmowych</p>
+          <p style="color:green">- Zgoda na implementacje oraz kupno stylu na końcu.</p>
         </div>
         <div class="progress"><b style="--value:50%"></b></div>
       </div>
     </li>
     <!-- 6 -->
-    <li class="step todo" onclick="toggleDesc(this)">
+    <li class="step active" onclick="toggleDesc(this)">
       <div class="icon">6</div>
       <div>
-        <div class="meta" data-pl="Akceptacja" data-en="Approval">Akceptacja</div>
-        <h3 class="title" data-pl="Feedback klienta" data-en="Client feedback">Feedback klienta</h3>
+        <div class="meta" data-pl="Akceptacja" data-en="Approval">API</div>
+        <h3 class="title" data-pl="Feedback klienta" data-en="Client feedback">Import rekordów</h3>
         <div class="desc">
-          <p><s>- Pierwsza runda uwag</s></p>
-          <p style="color:green">- Wszystkie zmiany wdrożone</p>
+          <p style="color:red">- Błąd importu (6103 rekordy) poprzez panel WP</p>
+          <p>- Zmiana taktyki importu rekordów</p>
+          <p>- Import rekordów poprzez SSH (chunkowanie)</p>
+          <p><s>- Import zakończony</s></p>
         </div>
         <div class="progress"><b style="--value:60%"></b></div>
       </div>
@@ -217,6 +220,7 @@ function switchLang(lang){
 </script>
 </body>
 </html>
+
 
 
 
