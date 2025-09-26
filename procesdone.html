@@ -1,8 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="pl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Proces zamówienia — 2025</title>
 <style>
 :root{
@@ -15,230 +16,363 @@
   --accent-2: #7ff0c6; /* gradient progress */
   --ring: #27324a;
 }
+*{box-sizing:border-box}
+html,body{height:100%}
 body{
-  margin:0; font:500 16px/1.5 system-ui,sans-serif;
+  margin:0; font:500 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
   background: var(--bg); color:var(--text);
 }
-.wrap{max-width:800px;margin:0 auto;padding:20px;}
-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
-.lang-switch button{margin-left:8px;padding:6px 10px;border-radius:8px;border:none;cursor:pointer;}
-.steps{display:flex; flex-direction:column; gap:14px;}
-.step{
-  position:relative;
-  display:grid; grid-template-columns:58px 1fr; gap:12px;
-  background:linear-gradient(180deg,var(--panel),var(--panel-2));
-  border:1px solid var(--ring); border-radius:14px; padding:16px;
-  cursor:pointer; transition:transform .2s; overflow:hidden;
-  min-height:120px;
-}
-.step:hover{transform:translateY(-2px);}
-.step .icon{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:var(--panel-2);}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px;max-width:900px;margin:0 auto}
+h1{margin:0;font-size:clamp(20px, 4vw, 34px);letter-spacing:.4px}
+.lang-switch{display:flex; gap:8px}
+.lang-switch button{padding:6px 10px; border-radius:8px; background:var(--panel-2); color:var(--text); border:1px solid var(--ring); cursor:pointer}
+
+ol.steps{list-style:none; margin:0 auto; padding:8px 14px 80px; max-width:900px; display:grid; gap:12px}
+.step{display:grid; grid-template-columns:50px 1fr; gap:14px; background:var(--panel); padding:14px; border-radius:14px; border:1px solid #1d2332; position:relative; transition:transform .15s; min-height:120px;}
+.step:hover{transform:translateY(-2px);} 
+.step .icon{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:var(--panel-2);} 
 .step .meta{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.85rem}
-.step .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:8px;background: rgba(127,240,198,.18); border:1px solid var(--ring); font-weight:700; color:var(--text);}
-.step.done{border-left:4px solid var(--accent);}
-.step.active{border-left:4px solid #78e08f; font-weight:600; background:linear-gradient(180deg,#1b2436,#242e46);}
-.step.active::before{
-  content:""; position:absolute; top:10px; right:10px;
-  width:12px; height:12px; border-radius:50%;
-  background:#78e08f; box-shadow:0 0 6px #78e08f;
+.step .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:#222b3f;font-weight:800}
+.step .title{margin:2px 0 6px 0; font-size:clamp(16px,2.6vw,20px)}
+.step .desc{color:#c9d3e7}
+.step .desc code, .step .desc kbd{background:#0e1422; border-radius:6px; padding:2px 6px; border:1px solid var(--ring); font-weight:700; color:var(--text);} 
+.step.done{border-left:4px solid var(--accent);} 
+.step.active{border-left:4px solid #78e08f; font-weight:600; background:linear-gradient(180deg,#1b2436,#242e46);} 
+.step.active::before{ 
+  content:""; position:absolute; top:10px; right:10px; 
+  width:12px; height:12px; border-radius:50%; 
+  background:#78e08f; box-shadow:0 0 6px #78e08f; 
 }
-.step.todo{border-left:4px solid #666; opacity:0.6; filter:grayscale(40%);}
+.step.todo{border-left:4px solid #666; opacity:0.6; filter:grayscale(40%);} 
 .desc{max-height:0; overflow:hidden; transition:max-height .4s ease, padding .4s ease; font-size:.95rem; line-height:1.3; margin-top:0;}
-.desc.open{max-height:500px; padding-top:6px;}
+.desc.open{max-height:9999px; padding-top:6px;}
 .progress{position:relative; height:6px; background:var(--panel-2); border-radius:999px; overflow:hidden; margin-top:10px;}
 .progress > b{display:block; height:100%; width:var(--value,0%); background:linear-gradient(90deg,var(--accent),var(--accent-2)); transition: width .3s;}
+
+/* Collapsible tree-like line inside any step */
+.tree-line{border-left:2px solid #22304a; padding-left:8px; margin:6px 0;}
+.tree-line > summary{list-style:none; cursor:pointer; user-select:none; line-height:1.4; position:relative; outline:none;}
+.tree-line > summary::-webkit-details-marker{display:none}
+.tree-line > summary::before{content:"▸"; display:inline-block; transform:translateY(-1px); margin-right:6px;}
+.tree-line[open] > summary::before{content:"▾"}
+.tree-line > summary::after{content:""; position:absolute; left:-8px; right:auto; top:0.9em; width:10px; height:0; border-bottom:1px solid #2e3b57;}
+.tree-line > div{ margin:6px 0 0 18px; color:#b0bed6; }
+.tree-line[open] > div{ color:#9aabc7; }
+
+/* Czytelne bloki danych w sekcjach */
+.desc pre{
+  margin:8px 0 0 0;
+  padding:10px 12px;
+  background:#0e1422;
+  border:1px solid var(--ring);
+  border-radius:10px;
+  font:600 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space:pre;
+  overflow:auto;
+  max-height:260px;
+}
+.desc p{ margin:6px 0; }
+.title{ display:flex; align-items:center; gap:8px; }
+
+/* Tile toggle button */
+.tile-toggle{
+  margin-left:8px;
+  padding:4px 10px;
+  font:500 12px/1 system-ui,sans-serif;
+  color:var(--text);
+  background:rgba(39,50,74,.35);
+  border:1px solid var(--ring);
+  border-radius:999px;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1 data-pl="Proces zamówienia — 2025" data-en="Order Process — 2025">Proces zamówienia — 2025</h1>
-    <div class="lang-switch">
-      <button onclick="switchLang('pl')">PL</button>
-      <button onclick="switchLang('en')">ENG</button>
-    </div>
-  </header>
-
-  <ol class="steps">
-    <!-- 1 -->
-    <li class="step done" onclick="toggleDesc(this)">
-      <div class="icon">1</div>
-      <div>
-        <div class="meta" data-pl="Pomysł" data-en="Idea">Pomysł</div>
-        <h3 class="title" data-pl="Inspiracja projektu" data-en="Project inspiration">Inspiracja projektu / Spotkanie zapoznawcze</h3>
-        <div class="desc">
-          <p>- Zebranie całej informacji odnośnie projektu.</p>
-          <p style="color:green">- Porozumienie odnośnie wymagań oraz oczekiwań.</p>
-          <p><s>- edycja istniejącego stylu.</s></p>
-          <p><s>- edycja CMS JOOMLA.</s></p>
-          <p style="color:green">- Porozumienie odnośnie wymagań implementacji pliku .API.</p>
-          <p style="color:green">- Zatwierdzony pomysł.</p>
-        </div>
-        <div class="progress"><b style="--value:10%"></b></div>
+<header>
+<h1 data-en="Order Process — 2025" data-pl="Proces zamówienia — 2025">Proces zamówienia — 2025</h1>
+<div class="lang-switch">
+<button onclick="switchLang('pl')">PL</button>
+<button onclick="switchLang('en')">ENG</button>
+</div>
+</header>
+<ol class="steps">
+  <!-- 1 -->
+  <li class="step done">
+    <div class="icon">1</div>
+    <div>
+      <div class="meta" data-en="Idea" data-pl="Pomysł">Pomysł</div>
+      <h3 class="title" data-en="Project inspiration" data-pl="Inspiracja projektu">Inspiracja projektu / Spotkanie zapoznawcze<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p>- Zebranie całej informacji odnośnie projektu.</p>
+        <p style="color:green">- Porozumienie odnośnie wymagań oraz oczekiwań.</p>
+        <p><s>- edycja istniejącego stylu.</s></p>
+        <p><s>- edycja CMS JOOMLA.</s></p>
+        <p style="color:green">- Porozumienie odnośnie wymagań implementacji pliku .API.</p>
+        <p style="color:green">- Zatwierdzony pomysł.</p>
       </div>
-    </li>
-    <!-- 2 -->
-    <li class="step done" onclick="toggleDesc(this)">
-      <div class="icon">2</div>
-      <div>
-        <div class="meta" data-pl="Brief" data-en="Brief">Brief</div>
-        <h3 class="title" data-pl="Onboarding klienta" data-en="Client onboarding">Onboarding klienta</h3>
-        <div class="desc">
+      <div class="progress"><b style="--value:10%"></b></div>
+    </div>
+  </li>
+  
+  <!-- 2 -->
+  <li class="step done">
+    <div class="icon">2</div>
+    <div>
+      <div class="meta" data-en="Brief" data-pl="Brief">Brief</div>
+      <h3 class="title" data-en="Requirements" data-pl="Wymagania">Wymagania techniczne / wycena<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
           <p>- Zebranie danych potrzebnych do stworzenia strony.</p>
           <p>- Zebranie plików oraz wytycznych potrzebnych do stworzenia strony.</p>
           <p style="color:green">- Uzyskano plik .API.</p>
           <p style="color:red">- Plik .API nie zawiera wszystkich potrzebnych danych.</p>
-          <p>- Zmiana taktyki implementacji API ze wzdlędu na ilość rekordów (800tyś~).</p>
+          <p>- Zmiana taktyki implementacji API ze wzdlędu na ilość rekordów (800tyś~) oraz brak zdjęć.</p>
           <p style="color:green">- Onboarding zakonczony.</p>
-        </div>
-        <div class="progress"><b style="--value:20%"></b></div>
       </div>
-    </li>
-    <!-- 3 -->
-    <li class="step done" onclick="toggleDesc(this)">
-      <div class="icon">3</div>
-      <div>
-        <div class="meta" data-pl="Porozumienie" data-en="Agreement">Porozumienie</div>
-        <h3 class="title" data-pl="Zakres + kosztorys" data-en="Scope + pricing">Zakres + kosztorys</h3>
-        <div class="desc">
+      <div class="progress"><b style="--value:20%"></b></div>
+    </div>
+  </li>
+
+  <!-- 3 -->
+  <li class="step done">
+    <div class="icon">3</div>
+    <div>
+      <div class="meta" data-en="Design" data-pl="Projekt">Projekt</div>
+      <h3 class="title" data-en="Wireframes" data-pl="Makiety">Makiety / architektura<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
           <p style="color:green">- Kosztorys zaakceptowany.</p>
           <p>- Sklep wordpress+woocomerce.</p>
           <p>- Płatny styl woocomerce.</p>
           <p>- Wykorzystanie AI do optymalizacji dużej ilości rekordów.</p>
           <p>- Minimalne SEO ze strony WP I WC.</p>
-        </div>
-        <div class="progress"><b style="--value:30%"></b></div>
       </div>
-    </li>
-    <!-- 4 -->
-    <li class="step done" onclick="toggleDesc(this)">
-      <div class="icon">4</div>
-      <div>
-        <div class="meta" data-pl="Makieta" data-en="Wireframe">Makieta</div>
-        <h3 class="title" data-pl="Prosta wizualizacja UX" data-en="Basic UX mockup">Prosta wizualizacja UX</h3>
-        <div class="desc">
+      <div class="progress"><b style="--value:30%"></b></div>
+    </div>
+  </li>
+
+  <!-- 4 -->
+  <li class="step done">
+    <div class="icon">4</div>
+    <div>
+      <div class="meta" data-en="Prototype" data-pl="Prototyp">Prototyp</div>
+      <h3 class="title" data-en="Clickable demo" data-pl="Klkalny prototyp">Klikalny prototyp / Wizualizacja projektu<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
           <p>- Instalacja Wordpress na Hostingu</p>
           <p>- Instalacja sklepu Woocomerce</p>
           <p>- Drobne poprawki i usprawnienia serwera (cache clear, ssh support, putty access)</p>
           <p style="color:green">- Kontakt z administracją hostingu w celu uzyskania informacji oraz usprawnienia hostingu/domeny.</p>
           <p>- Pomysł zamiany brakujących danych z .API na globalne dane a nadrzędnych kategorii.</p>
-        </div>
-        <div class="progress"><b style="--value:40%"></b></div>
       </div>
-    </li>
-    <!-- 5 -->
-    <li class="step done" onclick="toggleDesc(this)">
-      <div class="icon">5</div>
-      <div>
-        <div class="meta" data-pl="Projekt graficzny" data-en="Visual design">Projekt graficzny</div>
-        <h3 class="title" data-pl="UI i branding" data-en="UI & branding">UI i branding</h3>
-        <div class="desc">
-          <p style="color:green">- Porozumienie odnośnie stylu sklepu(Woocomerce).</p>
-          <p style="color:green">- Zgoda na implementacje oraz kupno stylu na końcu.</p>
-        </div>
-        <div class="progress"><b style="--value:50%"></b></div>
+      <div class="progress"><b style="--value:40%"></b></div>
+    </div>
+  </li>
+
+  <!-- 5 -->
+  <li class="step done">
+    <div class="icon">5</div>
+    <div>
+      <div class="meta" data-en="Build" data-pl="Implementacja">Implementacja</div>
+      <h3 class="title" data-en="MVP" data-pl="MVP">MVP / baza funkcjonalna / STYL<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p>- Ustawienie środowiska.</p>
+        <p>- Rdzeń funkcjonalny.</p>
+        <p style="color:green">- Zgoda na implementacje oraz kupno stylu na końcu.</p>
       </div>
-    </li>
-    <!-- 6 -->
-    <li class="step active" onclick="toggleDesc(this)">
-      <div class="icon">6</div>
-      <div>
-        <div class="meta" data-pl="Akceptacja" data-en="Approval">API</div>
-        <h3 class="title" data-pl="Feedback klienta" data-en="Client feedback">Import rekordów</h3>
-        <div class="desc">
-          <p style="color:red">- Błąd importu (6103 rekordy) z panelu WP</p>
-          <p>- Zmiana taktyki importu rekordów</p>
-          <p>- Usunięcie błędnie zaimportowanych rekordów (6103)</p>
-          <p>- Import rekordów poprzez SSH (chunkowanie)</p>
-          <p>- Wyodrebnienie 1000 linijek (chunk) do osobnego pliku w celu testowania</p>
-          <p style="color:red">- BLAD(zle formatowanie polskich znakow embeddings) plik uszkodzony.</p>
-          <p style="color:green">- Rekonstrukcja pliku(UTF-8) formatowania.</p>
-          <p style="color:red">- chunk 1000 linijek ukazuje, ze produkty nie sa w kolejnosci.</p>
-          <p>- Szukanie odpowiedniej metody kategoryzowania produktow.</p>
-          <p style="color:red">- PROBLEM(niektore produkty nie maja zadnej kategorii).</p>
-          <p>- Proba kategoryzowania na probce 1000 linijek:</p>
-          <p style="color:red">- Przy 1000 rekordow 485 to pozostale // prognoza: ZLE</p>
-          <p style="color:red">- Przy 10000 rekordow 4846 to pozostale // prognoza: ZLE</p>
-          <p>- Rozbicie 'pozostale' (4846) na podkategorie.</p>
-          <p>- Nieskategoryzowane w podkategoriach (NIEOKRESLONE): 3852</p>
-          <p><s>- Import zakończony</s></p>
-        </div>
-        <div class="progress"><b style="--value:60%"></b></div>
+      <div class="progress"><b style="--value:50%"></b></div>
+    </div>
+  </li>
+
+  <!-- 6 -->
+  <li class="step active">
+    <div class="icon">6</div>
+    <div>
+      <div class="meta" data-en="Approval" data-pl="Akceptacja">API</div>
+      <h3 class="title" data-en="Client feedback" data-pl="Feedback klienta">Import rekordów<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p style="color:red">- Błąd importu (6103 rekordy) z panelu WP</p>
+        <p>- Usunięcie błędnie zaimportowanych rekordów (6103)</p>
+        <p>- Zmiana taktyki importu rekordów = Import rekordów poprzez SSH (chunkowanie)</p>
+        <p>- Wyodrebnienie 1000 linijek (chunk) do osobnego pliku w celu testowania</p>
+        <p style="color:red">- BLAD(złe formatowanie polskich znaków embeddings) plik uszkodzony.</p>
+        <p style="color:red">- Rekonstrukcja pliku(UTF-8) formatowania. = FAIL (plik jest zapisany z błędami[juz w formacie UTF-8] nie do naprawy, potrzeba nowego pliku)</p>
+        <p style="color:red">- chunk 1000 linijek ukazuje, ze produkty nie sa w kolejnosci.</p>
+        <p style="color:red">- PROBLEM(niektóre produkty są nie do skategoryzowania po samej nazwie.).</p>
+        <p style="color:red">- Próba kategoryzowania na próbce 1000/10000 linijek:</p>
+
+        <details class="tree-line">
+          <summary>- Przy 1000 rekordow - 485 to pozostale (48%)</summary>
+          <div><pre>
+Count Name
+----- ----
+ 4846 pozostale-DA
+  835 hamulce-
+  820 filtry-
+  559 nadwozie-oswietlenie-szyby-lusterka
+  487 zawieszenie-
+  434 uklad-elektryczny-
+  321 uklad-chlodzenia-
+  284 silnik-osprzet-silnika-
+  235 systemy-komfortu-i-bezpieczestwa
+  168 uklad-napedowy-
+  165 amortyzacja-
+  149 ogrzewanie-wentylacja-klimatyzacja
+  149 naped-pasowy-
+  110 system-wycieraczek-plyn-
+   91 uklad-wydechowy-
+   62 uklad-zaplonowy-
+   56 uklady-regulacji-emisji-spalin-
+   42 kola-opony
+   41 naped-rozrzadu-
+   37 uklad-kierowniczy-
+   36 serwis-inspekcja
+   36 uklad-paliwowy-
+   16 akcesoria
+   12 akumulatory-
+    2 systemy-informacji-komunikacji
+    1 urzadzenia-do-transportu
+          </pre></div>
+        </details>
+
+        <details class="tree-line">
+          <summary>- Przy 10000 rekordow - 4846 to pozostale (48%)</summary>
+          <div><pre>
+Count Name
+----- ----
+ 4846 pozostale-DA
+  835 hamulce-
+  820 filtry-
+  559 nadwozie-oswietlenie-szyby-lusterka
+  487 zawieszenie-
+  434 uklad-elektryczny-
+  321 uklad-chlodzenia-
+  284 silnik-osprzet-silnika-
+  235 systemy-komfortu-i-bezpieczestwa
+  168 uklad-napedowy-
+  165 amortyzacja-
+  149 ogrzewanie-wentylacja-klimatyzacja
+  149 naped-pasowy-
+  110 system-wycieraczek-plyn-
+   91 uklad-wydechowy-
+   62 uklad-zaplonowy-
+   56 uklady-regulacji-emisji-spalin-
+   42 kola-opony
+   41 naped-rozrzadu-
+   37 uklad-kierowniczy-
+   36 serwis-inspekcja
+   36 uklad-paliwowy-
+   16 akcesoria
+   12 akumulatory-
+    2 systemy-informacji-komunikacji
+    1 urzadzenia-do-transportu
+          </pre></div>
+        </details>
+        <p>- Rozbicie 'pozostale' (4846) na podkategorie. &gt;&gt; Nieskategoryzowane w podkategoriach (NIEOKRESLONE): 3852 (38%)</p>
+        <p>- Wiersze przetworzone: 100000 || Pozostale: 41305 || NIEOKRESLONE w 'pozostale': 34506 </p>
+        <p>- Kontakt z informatykiem w celu wyeliminowania błędów braku polskich znaków (ETA: unknown) </p>
+        <p><s>- Import zakończony</s></p>
       </div>
-    </li>
-    <!-- 7 -->
-    <li class="step todo" onclick="toggleDesc(this)">
-      <div class="icon">7</div>
-      <div>
-        <div class="meta" data-pl="Kodowanie" data-en="Development">Kodowanie</div>
-        <h3 class="title" data-pl="Front + backend" data-en="Front + backend">Front + backend</h3>
-        <div class="desc">
-          <p>- Normalny tekst</p>
-        </div>
-        <div class="progress"><b style="--value:70%"></b></div>
+
+      <div class="progress"><b style="--value:60%"></b></div>
+    </div>
+  </li>
+
+  <!-- 7 -->
+  <li class="step todo">
+    <div class="icon">7</div>
+    <div>
+      <div class="meta" data-en="QA" data-pl="QA">QA</div>
+      <h3 class="title" data-en="Testing" data-pl="Testy">Testy integracyjne<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p>- Scenariusze testowe.</p>
+        <p>- Poprawki po testach.</p>
       </div>
-    </li>
-    <!-- 8 -->
-    <li class="step todo" onclick="toggleDesc(this)">
-      <div class="icon">8</div>
-      <div>
-        <div class="meta" data-pl="Podgląd" data-en="Preview">Podgląd</div>
-        <h3 class="title" data-pl="Wersja testowa" data-en="Test version">Wersja testowa</h3>
-        <div class="desc">
-          <p>- Normalny tekst</p>
-        </div>
-        <div class="progress"><b style="--value:80%"></b></div>
+      <div class="progress"><b style="--value:70%"></b></div>
+    </div>
+  </li>
+
+  <!-- 8 -->
+  <li class="step todo">
+    <div class="icon">8</div>
+    <div>
+      <div class="meta" data-en="Content" data-pl="Treści">Treści</div>
+      <h3 class="title" data-en="Copy & assets" data-pl="Copy i assety">Copy i assety<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p>- Ostateczne treści od klienta.</p>
+        <p>- Optymalizacja grafik.</p>
       </div>
-    </li>
-    <!-- 9 -->
-    <li class="step todo" onclick="toggleDesc(this)">
-      <div class="icon">9</div>
-      <div>
-        <div class="meta" data-pl="Testy" data-en="Testing">Testy</div>
-        <h3 class="title" data-pl="QA + poprawki" data-en="QA + fixes">QA + poprawki</h3>
-        <div class="desc">
-          <p>- Normalny tekst</p>
-          <p style="color:red">- Błędy krytyczne do naprawy</p>
-        </div>
-        <div class="progress"><b style="--value:90%"></b></div>
+      <div class="progress"><b style="--value:80%"></b></div>
+    </div>
+  </li>
+
+  <!-- 9 -->
+  <li class="step todo">
+    <div class="icon">9</div>
+    <div>
+      <div class="meta" data-en="Deploy" data-pl="Wdrożenie">Wdrożenie</div>
+      <h3 class="title" data-en="Go live" data-pl="Publikacja">Publikacja<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p>- Przeniesienie na produkcję.</p>
+        <p>- Konfiguracja DNS/SSL.</p>
       </div>
-    </li>
-    <!-- 10 -->
-    <li class="step todo" onclick="toggleDesc(this)">
-      <div class="icon">10</div>
-      <div>
-        <div class="meta" data-pl="Uruchomienie" data-en="Launch">Uruchomienie</div>
-        <h3 class="title" data-pl="System online" data-en="System online">System online</h3>
-        <div class="desc">
-          <p>- Normalny tekst</p>
-          <p style="color:green">- Projekt gotowy 🎉</p>
-        </div>
-        <div class="progress"><b style="--value:100%"></b></div>
+      <div class="progress"><b style="--value:90%"></b></div>
+    </div>
+  </li>
+
+  <!-- 10 -->
+  <li class="step todo">
+    <div class="icon">10</div>
+    <div>
+      <div class="meta" data-en="Aftercare" data-pl="Opieka">Opieka powdrożeniowa</div>
+      <h3 class="title" data-en="Support & growth" data-pl="Wsparcie i rozwój">Wsparcie i rozwój<button class="tile-toggle" aria-expanded="false">rozwiń</button></h3>
+      <div class="desc">
+        <p>- Monitoring.</p>
+        <p>- Iteracje rozwojowe.</p>
       </div>
-    </li>
-  </ol>
-</div>
+      <div class="progress"><b style="--value:100%"></b></div>
+    </div>
+  </li>
+</ol>
 
 <script>
-function toggleDesc(el){
-  const desc = el.querySelector('.desc');
-  desc.classList.toggle('open');
-}
-function switchLang(lang){
-  document.querySelectorAll('[data-pl]').forEach(el=>{
-    el.textContent = el.getAttribute('data-'+lang);
-  });
-}
+// Enhanced interactions: independent tile toggle + safe tree-line clicks
+(function(){
+  function initTiles(){
+    document.querySelectorAll('.step').forEach(step=>{
+      const desc = step.querySelector('.desc');
+      if (!desc) return;
+      const btn = step.querySelector('.tile-toggle');
+      const setState = (open)=>{
+        desc.classList.toggle('open', open);
+        if (btn){
+          btn.setAttribute('aria-expanded', String(open));
+          btn.textContent = open ? 'zwiń' : 'rozwiń';
+        }
+      };
+      // Button toggles only the tile
+      if (btn){
+        btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); setState(!desc.classList.contains('open')); });
+      }
+      // Clicking tile background toggles (except interactive zones)
+      step.addEventListener('click', (ev)=>{
+        if (ev.target.closest('.tile-toggle, .tree-line, a, button, input, textarea, select, summary')) return;
+        setState(!desc.classList.contains('open'));
+      });
+    });
+  }
+  // Prevent tile toggle when interacting with tree-line
+  document.addEventListener('click', (ev)=>{
+    if (ev.target.closest('.tree-line')){
+      ev.stopPropagation();
+    }
+  }, true); // capture to stop early
+  // Keep language switcher working as before
+  window.switchLang = function(lang){
+    document.querySelectorAll('[data-pl]').forEach(el=>{
+      el.textContent = el.getAttribute('data-'+lang);
+    });
+  };
+  // Init
+  initTiles();
+})();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
