@@ -196,39 +196,36 @@ ol.steps{list-style:none; margin:0 auto; padding:8px 14px 80px; max-width:900px;
         <p style="color:red">- Rekonstrukcja pliku(UTF-8) formatowania. = FAIL (plik jest zapisany z błędami[juz w formacie UTF-8] nie do naprawy, potrzeba nowego pliku)</p>
         <p style="color:red">- chunk 1000 linijek ukazuje, ze produkty nie sa w kolejnosci.</p>
         <p style="color:red">- PROBLEM(niektóre produkty są nie do skategoryzowania po samej nazwie.).</p>
-        <p style="color:red">- Próba kategoryzowania na próbce 1000/10000 linijek:</p>
+        <p>- Próba kategoryzowania na próbce 1000/10000 linijek:</p>
 
         <details class="tree-line">
           <summary>- Przy 1000 rekordow - 485 to pozostale (48%)</summary>
           <div><pre>
 Count Name
 ----- ----
- 4846 pozostale-DA
-  835 hamulce-
-  820 filtry-
-  559 nadwozie-oswietlenie-szyby-lusterka
-  487 zawieszenie-
-  434 uklad-elektryczny-
-  321 uklad-chlodzenia-
-  284 silnik-osprzet-silnika-
-  235 systemy-komfortu-i-bezpieczestwa
-  168 uklad-napedowy-
-  165 amortyzacja-
-  149 ogrzewanie-wentylacja-klimatyzacja
-  149 naped-pasowy-
-  110 system-wycieraczek-plyn-
-   91 uklad-wydechowy-
-   62 uklad-zaplonowy-
-   56 uklady-regulacji-emisji-spalin-
-   42 kola-opony
-   41 naped-rozrzadu-
-   37 uklad-kierowniczy-
-   36 serwis-inspekcja
-   36 uklad-paliwowy-
-   16 akcesoria
-   12 akumulatory-
-    2 systemy-informacji-komunikacji
-    1 urzadzenia-do-transportu
+  485 pozostale-DA
+   92 hamulce-
+   79 filtry-
+   51 zawieszenie-
+   48 nadwozie-oswietlenie-szyby-lusterka
+   37 uklad-elektryczny-
+   37 silnik-osprzet-silnika-
+   36 uklad-chlodzenia-
+   24 systemy-komfortu-i-bezpieczestwa
+   18 uklad-napedowy-
+   16 ogrzewanie-wentylacja-klimatyzacja
+   16 naped-pasowy-
+   14 system-wycieraczek-plyn-
+    9 amortyzacja-
+    8 naped-rozrzadu-
+    5 uklad-zaplonowy-
+    5 uklady-regulacji-emisji-spalin-
+    5 uklad-kierowniczy-
+    4 serwis-inspekcja
+    3 uklad-wydechowy-
+    3 uklad-paliwowy-
+    3 kola-opony
+    2 akcesoria
           </pre></div>
         </details>
 
@@ -268,6 +265,8 @@ Count Name
         <p>- Rozbicie 'pozostale' (4846) na podkategorie. &gt;&gt; Nieskategoryzowane w podkategoriach (NIEOKRESLONE): 3852 (38%)</p>
         <p>- Wiersze przetworzone: 100000 || Pozostale: 41305 || NIEOKRESLONE w 'pozostale': 34506 </p>
         <p>- Kontakt z informatykiem w celu wyeliminowania błędów braku polskich znaków (ETA: unknown) </p>
+        <p>- Fine tuning=dopracowanie parsowania </p>
+        <p style="color:green">- Wiersze przetworzone: 100000 || Pozostale: 35852 (35.9%) || NIEOKRESLONE w 'pozostale': 29014 (29.0%) </p>
         <p><s>- Import zakończony</s></p>
       </div>
 
