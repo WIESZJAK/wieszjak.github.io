@@ -21,28 +21,27 @@
       background: var(--bg);
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
-      overflow-x: hidden; /* Ukrywamy paski przewijania bo canvas jest duży */
+      overflow-x: hidden;
     }
 
     /* --- CANVAS FULLSCREEN --- */
     canvas {
       display: block;
-      position: fixed; /* Canvas "przyklejony" do okna */
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 0; /* Tło */
-      pointer-events: none; /* Żeby można było klikać w przyciski pod spodem */
+      z-index: 0;
+      pointer-events: none;
     }
 
-    /* --- UI ELEMENTS (wyższy z-index) --- */
+    /* --- UI ELEMENTS --- */
     nav, .hero-container, .controls-panel {
       position: relative;
       z-index: 10;
     }
 
-    /* Navbar */
     nav {
       display: flex;
       justify-content: space-between;
@@ -52,47 +51,26 @@
       box-sizing: border-box;
     }
 
-    .logo {
-      font-weight: 900;
-      font-size: 20px;
-      letter-spacing: 1px;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 30px;
-      align-items: center;
-    }
-
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.3s;
-    }
+    .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; }
+    .nav-links { display: flex; gap: 30px; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.3s; }
     .nav-links a:hover { color: #fff; }
 
     .lang-switch { display: flex; gap: 5px; }
     .lang-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: var(--text-muted);
-      padding: 4px 8px;
-      font-size: 12px;
-      border-radius: 4px;
-      cursor: pointer;
+      background: transparent; border: 1px solid rgba(255,255,255,0.2);
+      color: var(--text-muted); padding: 4px 8px; font-size: 12px;
+      border-radius: 4px; cursor: pointer;
     }
     .lang-btn.active { border-color: var(--accent-blue); color: #fff; }
 
-    /* Hero Section */
     .hero-container {
-      /* Zamiast flex center, używamy paddingu, bo canvas robi robotę wizualną */
       height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      /* Tekst HTML przesuwamy w dół, pod animowany napis */
+      /* Tekst HTML przesunięty pod animację */
       padding-top: 45vh; 
     }
 
@@ -126,26 +104,11 @@
     }
 
     .btn {
-      padding: 12px 30px;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      border: none;
-      transition: transform 0.2s;
+      padding: 12px 30px; border-radius: 30px; font-weight: 600;
+      font-size: 14px; cursor: pointer; border: none; transition: transform 0.2s;
     }
-
-    .btn-primary {
-      background: var(--btn-gradient);
-      color: #fff;
-      box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-    }
+    .btn-primary { background: var(--btn-gradient); color: #fff; box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3); }
+    .btn-secondary { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
     .btn:hover { transform: translateY(-2px); }
 
     @keyframes fadeInUp {
@@ -153,7 +116,7 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- ANIMATION CONTROLS --- */
+    /* --- CONTROLS PANEL --- */
     .controls-panel {
       position: fixed;
       bottom: 20px;
@@ -165,35 +128,20 @@
       backdrop-filter: blur(10px);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
-    .controls-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 1px;
-      margin-bottom: 5px;
-    }
-
+    .controls-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 5px; }
+    
     .ctrl-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 11px;
-      text-align: left;
-      transition: all 0.2s;
+      background: transparent; border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted); padding: 6px 12px; border-radius: 6px;
+      cursor: pointer; font-size: 11px; text-align: left; transition: all 0.2s;
     }
-
     .ctrl-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-    .ctrl-btn.active {
-      background: var(--accent-blue);
-      color: #fff;
-      border-color: transparent;
-    }
+    .ctrl-btn.active { background: var(--accent-blue); color: #fff; border-color: transparent; }
 
     @media (max-width: 768px) {
       .nav-links { display: none; }
@@ -202,9 +150,7 @@
         left: 20px; right: 20px; bottom: 10px;
         flex-direction: row; flex-wrap: wrap; justify-content: center;
       }
-      .hero-container {
-         padding-top: 40vh; /* Trochę wyżej na mobile */
-      }
+      .hero-container { padding-top: 40vh; }
     }
   </style>
 </head>
@@ -241,12 +187,13 @@
 
   <div class="controls-panel">
     <div class="controls-label">Wybierz animację:</div>
-    <button onclick="setEffect('corners')" id="btn-corners" class="ctrl-btn active">1. Turbo Rogi</button>
+    <button onclick="setEffect('corners')" id="btn-corners" class="ctrl-btn active">1. Turbo Rogi (Fix)</button>
     <button onclick="setEffect('matrix')" id="btn-matrix" class="ctrl-btn">2. Matrix Rain</button>
-    <button onclick="setEffect('galaxy')" id="btn-galaxy" class="ctrl-btn">3. Galaktyka</button>
+    <button onclick="setEffect('galaxy')" id="btn-galaxy" class="ctrl-btn">3. Galaktyka (Fix)</button>
     <button onclick="setEffect('quantum')" id="btn-quantum" class="ctrl-btn">4. Quantum Glitch</button>
     <button onclick="setEffect('split')" id="btn-split" class="ctrl-btn">5. WIESZ | JAK</button>
-    <button onclick="setEffect('circuit')" id="btn-circuit" class="ctrl-btn">6. Circuit Board</button>
+    <button onclick="setEffect('circuit')" id="btn-circuit" class="ctrl-btn">6. Circuit Shots (New)</button>
+    <button onclick="setEffect('terminal')" id="btn-terminal" class="ctrl-btn">7. Dev Terminal</button>
   </div>
 
   <script>
@@ -259,20 +206,19 @@
     let targetPoints = [];
     let currentEffect = 'corners';
     
+    // Globalne zmienne layoutu
     let textBounds = { minX: 0, maxX: 0 };
+    let textYPos = 0; // Pozycja Y środka tekstu
+
     const TEXT = "WIESZJAK";
-    
-    // Konfiguracja wydajności i wyglądu
     const MAX_PARTICLES_DESKTOP = 3500;
-    const MAX_PARTICLES_MOBILE = 2000; // Więcej cząsteczek, ale mniejszych
+    const MAX_PARTICLES_MOBILE = 2000;
     
     function isMobile() { return window.innerWidth < 768; }
 
     function resize() {
-      // Canvas na pełny ekran
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-      
       calculateTargetPoints();
       initEffect(currentEffect);
     }
@@ -287,18 +233,16 @@
       const textWidth = metrics.width;
       const textHeight = fontSize * 1.4;
       
-      // Ustalamy pozycję tekstu (nie na środku ekranu, tylko tam gdzie ma być w layoucie)
-      // Ok 35% wysokości ekranu
-      const textYPos = height * 0.35;
+      // Tekst w 35% wysokości ekranu
+      textYPos = height * 0.35;
 
       ctx.fillStyle = '#fff';
       ctx.clearRect(0, 0, width, height);
-      // Rysujemy tekst w pamięci do skanowania
       ctx.fillText(TEXT, width / 2, textYPos);
 
-      // Skanowanie
       const startX = Math.floor((width - textWidth) / 2);
       const startY = Math.floor(textYPos - textHeight/2);
+      
       textBounds.minX = startX;
       textBounds.maxX = startX + textWidth;
 
@@ -331,8 +275,9 @@
         this.ty = ty;
         this.joined = false;
         const speedMod = isMobile() ? 0.7 : 1.0;
+        this.delay = 0; // Default delay
 
-        // --- 1. ROGI ---
+        // --- 1. ROGI (WOLNIEJSZE) ---
         if (effectType === 'corners') {
           const corner = Math.floor(Math.random() * 4);
           if (corner === 0) { this.x = 0; this.y = 0; }
@@ -340,81 +285,115 @@
           else if (corner === 2) { this.x = width; this.y = height; }
           else { this.x = 0; this.y = height; }
           
-          this.speed = (0.08 + Math.random() * 0.06) * speedMod;
-          this.color = `hsl(${45 + Math.random() * 15}, 100%, 60%)`; // Złoto
+          // Zwolnione o ok 40% (z 0.08 na 0.05)
+          this.speed = (0.05 + Math.random() * 0.04) * speedMod;
+          this.color = `hsl(${45 + Math.random() * 15}, 100%, 60%)`;
 
         // --- 2. MATRIX ---
         } else if (effectType === 'matrix') {
           this.x = tx;
-          // Startujemy wysoko POZA ekranem, żeby deszcz pokrył całość
           this.y = -Math.random() * height * 1.5; 
           this.speed = (8 + Math.random() * 12) * speedMod;
-          this.color = '#00ff41'; // Matrix Green
+          this.color = '#00ff41';
 
-        // --- 3. GALAKTYKA ---
+        // --- 3. GALAKTYKA (POPRAWIONA) ---
         } else if (effectType === 'galaxy') {
           const angle = Math.random() * Math.PI * 2;
-          const radius = Math.max(width, height) * 0.8; 
+          // Zwiększony promień startowy, żeby wylatywały spoza ekranu (ale nie za daleko)
+          const radius = Math.max(width, height) * 0.7; 
+          
+          // Kluczowe: Centrum galaktyki to textYPos, a nie height/2
           this.x = width/2 + Math.cos(angle) * radius;
-          this.y = height/2 + Math.sin(angle) * radius;
+          this.y = textYPos + Math.sin(angle) * radius;
+          
           this.angle = angle;
           this.radius = radius;
-          this.color = `hsl(${200 + Math.random()*50}, 100%, 75%)`; // Cyan/Blue
+          this.color = `hsl(${200 + Math.random()*50}, 100%, 75%)`;
 
         // --- 4. GLITCH ---
         } else if (effectType === 'quantum') {
-          this.x = tx;
-          this.y = ty;
-          this.chaos = 50;
-          this.color = '#fff';
+          this.x = tx; this.y = ty; this.chaos = 50; this.color = '#fff';
 
         // --- 5. SPLIT ---
         } else if (effectType === 'split') {
           const splitPoint = textBounds.minX + (textBounds.maxX - textBounds.minX) * 0.63;
           if (tx < splitPoint) {
-            this.x = -Math.random() * width * 0.3; 
-            this.color = '#ff4d4d'; // Red
+            this.x = -Math.random() * width * 0.3; this.color = '#ff4d4d'; 
           } else {
-            this.x = width + Math.random() * width * 0.3;
-            this.color = '#4dffff'; // Cyan
+            this.x = width + Math.random() * width * 0.3; this.color = '#4dffff'; 
           }
           this.y = ty;
           this.speed = (0.04 + Math.random() * 0.03) * speedMod;
 
-        // --- 6. CIRCUIT (Nowy!) ---
+        // --- 6. CIRCUIT (RANDOM SHOOTS) ---
         } else if (effectType === 'circuit') {
           // Start z losowej krawędzi
-          if(Math.random() > 0.5) {
-             this.x = Math.random() * width;
-             this.y = Math.random() > 0.5 ? -10 : height + 10;
-          } else {
-             this.x = Math.random() > 0.5 ? -10 : width + 10;
-             this.y = Math.random() * height;
-          }
-          this.speed = (4 + Math.random() * 4) * speedMod;
-          this.moveDir = Math.floor(Math.random() * 2); // 0 = X move, 1 = Y move
-          this.color = '#bd00ff'; // Neon Purple/Tech
+          const side = Math.floor(Math.random() * 4);
+          if (side === 0) { this.x = Math.random() * width; this.y = -10; } // Top
+          else if (side === 1) { this.x = width + 10; this.y = Math.random() * height; } // Right
+          else if (side === 2) { this.x = Math.random() * width; this.y = height + 10; } // Bottom
+          else { this.x = -10; this.y = Math.random() * height; } // Left
+
+          this.speed = (6 + Math.random() * 6) * speedMod;
+          // Dodajemy LOSOWE opóźnienie, żeby nie leciały ścianą
+          this.delay = Math.random() * 100; // 0-100 klatek opóźnienia
+          this.color = '#bd00ff';
+
+        // --- 7. DEV TERMINAL (CURSOR) ---
+        } else if (effectType === 'terminal') {
+           this.x = tx;
+           this.y = ty;
+           this.visible = false;
+           this.color = '#fff';
         }
       }
     }
 
+    // Zmienne do efektu Terminal
+    let cursorX = 0;
+
     function initEffect(type) {
       currentEffect = type;
+      if (type === 'terminal') cursorX = textBounds.minX - 50;
+      
       particles = targetPoints.map(p => new Particle(p.x, p.y, type));
+      
       document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`btn-${type}`).classList.add('active');
     }
 
     function animate() {
-      // Fade background (smuga)
+      // Tło
       if (currentEffect === 'quantum') ctx.fillStyle = 'rgba(5, 8, 15, 1)';
-      else if (currentEffect === 'matrix') ctx.fillStyle = 'rgba(5, 8, 15, 0.4)'; // Dłuższa smuga dla matrixa
+      else if (currentEffect === 'matrix') ctx.fillStyle = 'rgba(5, 8, 15, 0.4)';
       else ctx.fillStyle = 'rgba(5, 8, 15, 0.25)';
       
       ctx.fillRect(0, 0, width, height);
 
-      // Rozmiar cząsteczki: Mniejszy na mobile (1.3px), większy na desktop (2px)
-      // To naprawia problem "wielkich kwadratów"
+      // --- LOGIKA GLOBALNA DLA TERMINAL ---
+      if (currentEffect === 'terminal') {
+         // Kursor przesuwa się w prawo
+         cursorX += (width * 0.015);
+         
+         // Rysowanie kursora
+         if (cursorX < textBounds.maxX + 50) {
+           ctx.fillStyle = '#0f0';
+           ctx.fillRect(cursorX, textYPos - 60, 15, 120); // Wysokość kursora "na oko"
+           ctx.shadowBlur = 15;
+           ctx.shadowColor = '#0f0';
+         } else {
+           // Miganie kursora na końcu
+           if (Math.floor(Date.now() / 500) % 2 === 0) {
+             ctx.fillStyle = '#0f0';
+             ctx.fillRect(cursorX, textYPos - 60, 15, 120);
+           }
+           ctx.shadowBlur = 0;
+         }
+      }
+      // Reset cienia dla reszty
+      else { ctx.shadowBlur = 0; }
+
+
       const pSize = isMobile() ? 1.25 : 2.0; 
 
       particles.forEach(p => {
@@ -426,35 +405,29 @@
              p.y += (p.ty - p.y) * p.speed;
              if (Math.abs(p.tx - p.x) < 0.8 && Math.abs(p.ty - p.y) < 0.8) p.joined = true;
            }
-           ctx.fillStyle = p.joined ? '#ffeebb' : p.color; // Zostaje lekko złoty
+           ctx.fillStyle = p.joined ? '#ffeebb' : p.color;
            ctx.fillRect(p.x, p.y, pSize, pSize);
         }
 
-        // 2. MATRIX (Full screen rain)
+        // 2. MATRIX
         else if (currentEffect === 'matrix') {
-          if (p.y < p.ty) {
-             p.y += p.speed;
-          } else {
-             p.y = p.ty; 
-          }
+          if (p.y < p.ty) p.y += p.speed;
+          else p.y = p.ty; 
           
-          // Kolorowanie: 
-          // Jeśli dotarł -> Zostaje jasnozielony (nie biały, żeby pasował)
-          // Jeśli leci -> Ciemniejszy zielony
           if (p.y >= p.ty) {
-             ctx.fillStyle = '#ccffcc'; // Bardzo jasna zieleń, prawie biała
-             if(Math.random() > 0.99) ctx.fillStyle = '#00ff00'; // Glitch
+             ctx.fillStyle = '#ccffcc';
+             if(Math.random() > 0.99) ctx.fillStyle = '#00ff00';
           } else {
              ctx.fillStyle = p.color;
           }
-          
           if (p.y > 0 && p.y < height) ctx.fillRect(p.x, p.y, pSize, pSize * 2.5);
         }
 
-        // 3. GALAXY
+        // 3. GALAXY (Fixed Center)
         else if (currentEffect === 'galaxy') {
+          // Obliczamy cel względem textYPos (nie height/2)
           const dx = p.tx - width/2;
-          const dy = p.ty - height/2;
+          const dy = p.ty - textYPos; // FIX
           const targetRadius = Math.sqrt(dx*dx + dy*dy);
           const targetAngle = Math.atan2(dy, dx);
 
@@ -462,13 +435,15 @@
              const ease = isMobile() ? 0.03 : 0.05;
              p.radius -= (p.radius - targetRadius) * ease;
              p.angle += (targetAngle - p.angle) * ease;
+             
+             // Używamy textYPos jako centrum obrotu
              p.x = width/2 + Math.cos(p.angle) * p.radius;
-             p.y = height/2 + Math.sin(p.angle) * p.radius;
+             p.y = textYPos + Math.sin(p.angle) * p.radius; // FIX
+             
              if (Math.abs(p.radius - targetRadius) < 1) p.joined = true;
           } else {
              p.x = p.tx; p.y = p.ty;
           }
-          // Galaxy zostaje niebieskawa
           ctx.fillStyle = p.joined ? '#e0f7fa' : p.color; 
           ctx.fillRect(p.x, p.y, pSize, pSize);
         }
@@ -486,41 +461,56 @@
         else if (currentEffect === 'split') {
           const dx = p.tx - p.x;
           p.x += dx * p.speed;
-          
-          if (Math.abs(dx) < 1) {
-             p.x = p.tx;
-             // Na koniec lekko zabarwione
-             ctx.fillStyle = '#fff'; 
-          } else {
-             ctx.fillStyle = p.color;
-          }
+          if (Math.abs(dx) < 1) { p.x = p.tx; ctx.fillStyle = '#fff'; } 
+          else { ctx.fillStyle = p.color; }
           ctx.fillRect(p.x, p.y, pSize, pSize);
         }
 
-        // 6. CIRCUIT BOARD (Manhattan Distance Movement)
+        // 6. CIRCUIT (Delayed Shots)
         else if (currentEffect === 'circuit') {
+           // Obsługa opóźnienia
+           if (p.delay > 0) {
+             p.delay--;
+             return; // Czekaj, nie rysuj jeszcze
+           }
+
            if (!p.joined) {
-             // Poruszamy się tylko w X albo tylko w Y w danej klatce
              const dx = p.tx - p.x;
              const dy = p.ty - p.y;
              
-             // Bardzo proste AI: Idź w stronę, gdzie jest dalej, ale trzymaj kąty proste
+             // Ruch Manhattan (tylko X lub tylko Y)
              if (Math.abs(dx) > Math.abs(dy)) {
                 p.x += Math.sign(dx) * p.speed;
              } else {
                 p.y += Math.sign(dy) * p.speed;
              }
              
-             // Snap
              if (Math.abs(dx) < p.speed && Math.abs(dy) < p.speed) {
-                p.x = p.tx;
-                p.y = p.ty;
-                p.joined = true;
+                p.x = p.tx; p.y = p.ty; p.joined = true;
              }
            }
-           
-           ctx.fillStyle = p.joined ? '#e0b0ff' : p.color; // Fioletowy -> Jasny fiolet
+           ctx.fillStyle = p.joined ? '#e0b0ff' : p.color;
            ctx.fillRect(p.x, p.y, pSize, pSize);
+        }
+
+        // 7. TERMINAL (New)
+        else if (currentEffect === 'terminal') {
+           // Jeśli kursor minął ten punkt -> pokaż go
+           if (!p.visible && cursorX > p.tx) {
+             p.visible = true;
+             // Efekt "wypalania": na początku zielone, potem białe
+             p.flash = 20; 
+           }
+
+           if (p.visible) {
+             if (p.flash > 0) {
+               ctx.fillStyle = '#0f0'; // Świeży kod
+               p.flash--;
+             } else {
+               ctx.fillStyle = '#fff'; // Zastygły kod
+             }
+             ctx.fillRect(p.tx, p.ty, pSize, pSize);
+           }
         }
 
       });
