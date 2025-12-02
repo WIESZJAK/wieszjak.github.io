@@ -493,7 +493,7 @@
         // --- 5. SPLIT (FIXED RATIO) ---
         } else if (effectType === 'split') {
           // Używamy 0.57 zamiast 0.63, żeby nie ucinać 'J'
-          const splitPoint = textBounds.minX + (textBounds.maxX - textBounds.minX) * 0.57;
+          const splitPoint = textBounds.minX + (textBounds.maxX - textBounds.minX) * 0.60;
           if (tx < splitPoint) {
             this.x = -Math.random() * width * 0.3; 
             this.colorType = 1; 
