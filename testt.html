@@ -24,7 +24,6 @@
       font-family: 'Inter', sans-serif;
       color: var(--text-main);
       overflow-x: hidden;
-      /* Fix dla pull-to-refresh na mobile, żeby nie psuło canvasu */
       overscroll-behavior-y: none; 
     }
 
@@ -40,23 +39,24 @@
     }
 
     /* --- UI LAYERS --- */
-    nav, .hero-container, .right-panel, .left-panel, #mobile-replay-btn {
+    /* Główny kontener UI, który będziemy pokazywać/ukrywać */
+    #ui-layer {
       position: relative;
       z-index: 10;
-    }
-
-    .ui-fade {
-      opacity: 0;
+      opacity: 0; /* Domyślnie ukryty */
       transition: opacity 1.5s ease-in-out;
-      pointer-events: none;
+      pointer-events: none; /* Nieklikalny gdy ukryty */
     }
-    .ui-fade.visible {
+    
+    #ui-layer.visible {
       opacity: 1;
-      pointer-events: auto;
+      pointer-events: auto; /* Klikalny gdy widoczny */
     }
 
-    /* Override */
+    /* Panele sterowania ZAWSZE na wierzchu i widoczne */
     .left-panel, .right-panel, #mobile-replay-btn {
+      position: fixed;
+      z-index: 100;
       opacity: 1 !important;
       pointer-events: auto !important;
     }
@@ -81,10 +81,8 @@
     }
     .lang-btn.active { border-color: var(--accent-blue); color: #fff; }
 
-    /* Mobile Replay Button */
     #mobile-replay-btn {
-        display: none; /* Hidden on desktop */
-        position: fixed;
+        display: none;
         top: 20px;
         right: 20px;
         width: 40px;
@@ -96,7 +94,6 @@
         font-size: 20px;
         cursor: pointer;
         backdrop-filter: blur(5px);
-        z-index: 1000;
         transition: transform 0.3s;
     }
     #mobile-replay-btn:active { transform: rotate(360deg); background: var(--accent-blue); }
@@ -108,22 +105,16 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end; /* Push content down */
+      justify-content: flex-end; 
       padding-bottom: 15vh;
       box-sizing: border-box;
     }
-
-    #ui-content {
-        position: relative; z-index: 10; text-align: center; max-width: 700px;
-        padding: 0 20px; opacity: 0; transition: opacity 1.5s ease-in-out; pointer-events: none;
-    }
-    #ui-content.visible { opacity: 1; pointer-events: auto; }
 
     .subtitle {
       color: var(--accent-blue); font-weight: 700; font-size: 16px;
       letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px;
     }
-    .description { color: var(--text-muted); line-height: 1.6; margin-bottom: 40px; font-size: 16px; }
+    .description { color: var(--text-muted); max-width: 600px; line-height: 1.6; margin-bottom: 40px; font-size: 16px; padding: 0 20px; text-align: center; }
     .cta-group { display: flex; gap: 20px; justify-content: center; }
 
     .btn {
@@ -138,7 +129,7 @@
     .left-panel, .right-panel {
       position: fixed; background: var(--panel-bg); border: 1px solid var(--border);
       backdrop-filter: blur(10px); display: flex; flex-direction: column;
-      z-index: 999; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); overflow: visible;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); overflow: visible;
     }
     .panel-scroll-area { overflow-y: auto; max-height: 80vh; padding: 15px; scrollbar-width: thin; }
 
@@ -193,31 +184,19 @@
     select { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; font-size: 12px; outline: none; cursor: pointer; margin-bottom: 5px; }
     select option { background: #0b0f1a; color: #fff; }
 
-    /* VISIBILITY HELPERS */
     .desktop-only { display: block; }
     .mobile-only { display: none; }
 
     @media (max-width: 768px) {
       .nav-links { display: none; }
       nav { padding: 20px; }
-      
       #mobile-replay-btn { display: flex; align-items: center; justify-content: center; }
-
       .hero-container { padding-bottom: 20vh; }
       .left-panel { top: 70px; } 
-      
-      .right-panel { 
-          width: 100%; height: auto; border-radius: 12px 12px 0 0; bottom: 0; right: 0; 
-          border: none; border-top: 1px solid var(--border); transform: translateY(0); 
-      }
+      .right-panel { width: 100%; height: auto; border-radius: 12px 12px 0 0; bottom: 0; right: 0; border: none; border-top: 1px solid var(--border); transform: translateY(0); }
       .right-panel.collapsed { transform: translateY(100%); }
-      
-      .right-btn { 
-          left: auto; right: 20px; top: -40px; width: 100px; height: 40px; 
-          border-radius: 8px 8px 0 0; font-size: 12px; font-weight: bold; 
-      }
+      .right-btn { left: auto; right: 20px; top: -40px; width: 100px; height: 40px; border-radius: 8px 8px 0 0; font-size: 12px; font-weight: bold; }
       .right-btn::after { content: "OPCJE ▲"; }
-
       .desktop-only { display: none; }
       .mobile-only { display: block; }
     }
@@ -229,7 +208,7 @@
 
   <button id="mobile-replay-btn" onclick="replayAnimation()">↻</button>
 
-  <div id="ui-wrapper" class="ui-fade">
+  <div id="ui-layer">
     <nav>
         <div class="logo">WIESZJAK</div>
         <div class="nav-links">
@@ -245,13 +224,11 @@
     </nav>
 
     <div class="hero-container">
-        <div id="ui-content">
-            <div class="subtitle">Design & Development</div>
-            <div class="description">Tworzę nowoczesne strony internetowe i aplikacje webowe z pasją do detali, wydajności i minimalizmu.</div>
-            <div class="cta-group">
-            <button class="btn btn-primary">Zobacz projekty</button>
-            <button class="btn btn-secondary">Poznaj proces</button>
-            </div>
+        <div class="subtitle">Design & Development</div>
+        <div class="description">Tworzę nowoczesne strony internetowe i aplikacje webowe z pasją do detali, wydajności i minimalizmu.</div>
+        <div class="cta-group">
+        <button class="btn btn-primary">Zobacz projekty</button>
+        <button class="btn btn-secondary">Poznaj proces</button>
         </div>
     </div>
   </div>
@@ -270,7 +247,6 @@
 
   <div class="right-panel" id="rightPanel">
     <div class="panel-toggle-btn right-btn" onclick="toggleRightPanel()"></div>
-    
     <div class="panel-scroll-area">
         <div class="controls-label" style="margin-top:0;">Opcje</div>
         <button onclick="resetToIdle()" id="btn-reset" class="ctrl-btn reset">⟲ RESET (Idle)</button>
@@ -284,17 +260,15 @@
         </select>
 
         <div class="controls-label">Wybierz animację:</div>
-        
         <div class="desktop-only">
             <button onclick="triggerTransition('corners')" id="btn-corners" class="ctrl-btn">1. Turbo Rogi</button>
             <button onclick="triggerTransition('matrix')" id="btn-matrix" class="ctrl-btn">2. Matrix Rain</button>
             <button onclick="triggerTransition('galaxy')" id="btn-galaxy" class="ctrl-btn">3. Galaktyka</button>
             <button onclick="triggerTransition('quantum')" id="btn-quantum" class="ctrl-btn">4. Quantum Glitch</button>
-            <button onclick="triggerTransition('split')" id="btn-split" class="ctrl-btn">5. WIESZ | JAK</button>
+            <button onclick="triggerTransition('split')" id="btn-split" class="ctrl-btn active">5. WIESZ | JAK</button>
             <button onclick="triggerTransition('circuit')" id="btn-circuit" class="ctrl-btn">6. Circuit Shots</button>
             <button onclick="triggerTransition('crossfire')" id="btn-crossfire" class="ctrl-btn">7. Crossfire</button>
         </div>
-
         <div class="mobile-only">
             <select id="mobile-anim-select" onchange="triggerTransition(this.value)">
                 <option value="split" selected>WIESZ | JAK</option>
@@ -326,7 +300,7 @@
     
     let width, height;
     
-    // --- KONFIGURACJA (TWOJE USTAWIENIA) ---
+    // --- KONFIGURACJA ---
     const IDLE_CONFIG = { count: 150, speed: 1, sizeBase: 2.0, alphaBase: 0.4, alphaVar: 0.4, tailScale: 0 };
     const ASH_CONFIG = { count: 60, turbulence: 4.25, changeChance: 0.96, friction: 0.98, sizeMax: 1.5, alphaBase: 0.3, alphaVar: 0.3, tailScale: 0 };
     const FLARE_CONFIG = { count: 3, speedMin: 30.0, speedMax: 35.0, glow: 1, tailScale: 0, alphaBase: 0.0, fadeSpeed: 0.04, sizeMin: 2, sizeMax: 4, turbulence: 2.0, friction: 0.99 };
@@ -343,6 +317,7 @@
     let transitionTimer = 0;
     let nextEffectType = null;
     let uiVisible = false;
+    let safetyTimer = null; // Zabezpieczenie przed brakiem UI
 
     let currentEffect = 'split'; 
     
@@ -362,7 +337,6 @@
     document.getElementById('colorAsh').addEventListener('input', (e) => { config.colorAsh = e.target.value; updateParticleColors(); });
     document.getElementById('colorFlare').addEventListener('input', (e) => { config.colorFlare = e.target.value; updateParticleColors(); });
     document.getElementById('colorText').addEventListener('input', (e) => { config.colorText = e.target.value; });
-    
     document.getElementById('transitionSelect').addEventListener('change', (e) => { transitionMode = e.target.value; });
 
     function toggleSolidText() { config.disableWhiteText = document.getElementById('toggleWhiteText').checked; }
@@ -403,17 +377,11 @@
     // --- REPLAY LOGIC ---
     window.replayAnimation = function() {
         if(isTransitioning) return;
-        
-        // 1. Reset to Idle
         resetToIdle();
-        
-        // 2. Wait 2.5s then trigger last effect
-        setTimeout(() => {
-            triggerTransition(currentEffect);
-        }, 2500);
+        setTimeout(() => { triggerTransition(currentEffect); }, 2500);
     }
 
-    // --- PARTICLES ---
+    // --- CLASSES ---
     class IdleParticle {
       constructor() {
         this.x = Math.random() * width; this.y = Math.random() * height;
@@ -519,7 +487,7 @@
       ctx.font = `900 ${fontSize}px 'Inter', sans-serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       
-      // POSITION FIX: LOWER THE TEXT
+      // POSITION: Lowered
       textYPos = isMobile() ? height * 0.42 : height * 0.40;
       
       ctx.fillStyle = '#fff'; ctx.clearRect(0, 0, width, height); ctx.fillText(TEXT, width / 2, textYPos);
@@ -575,6 +543,12 @@
     }
 
     // --- TRANSITION LOGIC ---
+    function forceShowUI() {
+        if(!uiVisible && !isIdle && !isTransitioning) {
+            document.getElementById('ui-layer').classList.add('visible');
+            uiVisible = true;
+        }
+    }
 
     window.triggerTransition = function(targetType) {
         if(isTransitioning) return; 
@@ -582,32 +556,38 @@
         nextEffectType = targetType;
         transitionTimer = 0;
         
-        document.getElementById('ui-content').classList.remove('visible');
+        // Hide UI
+        document.getElementById('ui-layer').classList.remove('visible');
         uiVisible = false;
+        if(safetyTimer) clearTimeout(safetyTimer);
         
-        // AUTO COLLAPSE PANELS
+        // Auto Collapse
         document.getElementById('leftPanel').classList.add('collapsed');
         document.getElementById('rightPanel').classList.add('collapsed');
         
-        // Sync button states
         document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
-        if(document.getElementById(`btn-${targetType}`)) {
-            document.getElementById(`btn-${targetType}`).classList.add('active');
-        }
-        // Sync mobile select
-        document.getElementById('mobile-anim-select').value = targetType;
+        if(document.getElementById(`btn-${targetType}`)) document.getElementById(`btn-${targetType}`).classList.add('active');
+        if(document.getElementById('mobile-anim-select')) document.getElementById('mobile-anim-select').value = targetType;
     };
 
     window.resetToIdle = function() {
       isIdle = true; isTransitioning = false; particles = []; initIdle();
-      document.getElementById('ui-content').classList.remove('visible');
+      
+      document.getElementById('ui-layer').classList.remove('visible');
       uiVisible = false;
+      if(safetyTimer) clearTimeout(safetyTimer);
+      
       document.getElementById('leftPanel').classList.add('collapsed');
       document.getElementById('rightPanel').classList.add('collapsed');
       document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
     }
 
-    function initEffect(type) { particles = targetPoints.map(p => new Particle(p.x, p.y, type, p.row)); }
+    function initEffect(type) { 
+        particles = targetPoints.map(p => new Particle(p.x, p.y, type, p.row));
+        // SAFETY TIMER: Force UI to show after 3s even if animation glitches
+        if(safetyTimer) clearTimeout(safetyTimer);
+        safetyTimer = setTimeout(forceShowUI, 3000);
+    }
 
     function runTransitionStep() {
         transitionTimer++;
@@ -618,24 +598,19 @@
 
         if (transitionMode === 'warp') {
             allArrays.forEach(p => {
-                const dx = p.x - centerX; const dy = p.y - centerY;
-                const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                const dx = p.x - centerX; const dy = p.y - centerY; const dist = Math.sqrt(dx*dx + dy*dy) || 1;
                 p.x += (dx / dist) * (transitionTimer * 2); p.y += (dy / dist) * (transitionTimer * 2);
             });
             if (transitionTimer > 40) finished = true;
-
         } else if (transitionMode === 'static') {
             allArrays.forEach(p => {
-                p.x += (Math.random() - 0.5) * 15;
-                p.y += (Math.random() - 0.5) * 15;
+                p.x += (Math.random() - 0.5) * 15; p.y += (Math.random() - 0.5) * 15;
                 if(p.alpha > 0) p.alpha -= 0.05;
             });
             if (transitionTimer > 30) finished = true;
-
         } else if (transitionMode === 'collapse') {
-            if (transitionTimer < 30) {
-               allArrays.forEach(p => { p.x += (centerX - p.x) * 0.15; p.y += (centerY - p.y) * 0.15; });
-            } else if (transitionTimer < 35) { /* Wait */ } 
+            if (transitionTimer < 30) { allArrays.forEach(p => { p.x += (centerX - p.x) * 0.15; p.y += (centerY - p.y) * 0.15; }); } 
+            else if (transitionTimer < 35) { /* Wait */ } 
             else {
                const waveTimer = transitionTimer - 35; const radius = waveTimer * 40; 
                allArrays.forEach(p => {
@@ -648,12 +623,8 @@
                });
             }
             if (transitionTimer > 70) finished = true;
-
         } else if (transitionMode === 'upload') {
-            allArrays.forEach(p => {
-                p.y -= (transitionTimer * 2) + Math.random() * 10;
-                p.x += (Math.random() - 0.5) * 2;
-            });
+            allArrays.forEach(p => { p.y -= (transitionTimer * 2) + Math.random() * 10; p.x += (Math.random() - 0.5) * 2; });
             if (transitionTimer > 40) finished = true;
         }
 
@@ -664,24 +635,16 @@
         }
     }
 
-    // --- MAIN LOOP ---
     function animate() {
       if (isTransitioning) {
           if (transitionMode === 'collapse' && transitionTimer >= 30 && transitionTimer < 35) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height); }
           else { ctx.fillStyle = 'rgba(5, 8, 15, 0.3)'; ctx.fillRect(0, 0, width, height); }
-          
           runTransitionStep();
-          
           [...idleParticles, ...ashParticles, ...flareParticles].forEach(p => {
               if (transitionMode === 'static') {
-                  if(p.alpha > 0.1) {
-                      ctx.fillStyle = Math.random() > 0.5 ? '#fff' : (Math.random() > 0.5 ? '#0ff' : '#f0f');
-                      ctx.fillRect(p.x, p.y, Math.random()*3, Math.random()*3);
-                  }
-              } else if (transitionMode === 'upload') {
-                  ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 1, transitionTimer * 2);
-              } else if(p.draw) { p.draw(); }
-              else { ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size || 2, p.size || 2); }
+                  if(p.alpha > 0.1) { ctx.fillStyle = Math.random() > 0.5 ? '#fff' : (Math.random() > 0.5 ? '#0ff' : '#f0f'); ctx.fillRect(p.x, p.y, Math.random()*3, Math.random()*3); }
+              } else if (transitionMode === 'upload') { ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, 1, transitionTimer * 2); } 
+              else if(p.draw) { p.draw(); } else { ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size || 2, p.size || 2); }
           });
           requestAnimationFrame(animate); return;
       }
@@ -730,19 +693,17 @@
       });
 
       if (allJoined && !uiVisible) {
-          document.getElementById('ui-content').classList.add('visible');
+          document.getElementById('ui-layer').classList.add('visible');
           uiVisible = true;
+          if(safetyTimer) clearTimeout(safetyTimer);
       }
 
       animationId = requestAnimationFrame(animate);
     }
 
-    // Optimized Resize Listener (Debounce + height check)
     let lastWidth = window.innerWidth;
     let resizeTimer;
     window.addEventListener('resize', () => {
-       // Only resize if width changed (orientation) OR huge height change
-       // This prevents UI bars on mobile from resetting animation constantly
        if (Math.abs(window.innerWidth - lastWidth) > 50) {
            lastWidth = window.innerWidth;
            clearTimeout(resizeTimer); 
