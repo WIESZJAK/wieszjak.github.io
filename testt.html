@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WIESZJAK - Ultimate Particles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05080f; 
+      --text-main: #ffffff;
+      --text-muted: #8b9bb4;
+      --accent-blue: #5b8def;
+      --panel-bg: rgba(11, 15, 26, 0.95);
+      --border: rgba(255,255,255,0.15);
+      --btn-reset: #ff4d4d;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    canvas {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* --- UI LAYERS & TRANSITIONS --- */
+    nav, .hero-container, .right-panel, .left-panel {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* UI Fade Logic */
+    .ui-fade {
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+      pointer-events: none;
+    }
+    .ui-fade.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Override for panels so they are always accessible */
+    .left-panel, .right-panel {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; }
+    .nav-links { display: flex; gap: 30px; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+    .nav-links a:hover { color: #fff; }
+
+    .lang-switch { display: flex; gap: 5px; }
+    .lang-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text-muted); padding: 4px 8px; font-size: 12px;
+      border-radius: 4px; cursor: pointer;
+    }
+    .lang-btn.active { border-color: var(--accent-blue); color: #fff; }
+
+    .hero-container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding-top: 45vh; 
+      pointer-events: none; 
+    }
+    .hero-container > * { pointer-events: auto; }
+
+    .subtitle {
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 25px;
+    }
+
+    .description {
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 40px;
+      font-size: 16px;
+      padding: 0 20px;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 20px;
+    }
+
+    .btn {
+      padding: 12px 30px; border-radius: 30px; font-weight: 600;
+      font-size: 14px; cursor: pointer; border: none; transition: transform 0.2s;
+    }
+    .btn-primary { background: linear-gradient(135deg, #7a9eff, #5b8def); color: #fff; box-shadow: 0 4px 15px rgba(91, 141, 239, 0.3); }
+    .btn-secondary { background: transparent; border: 1px solid var(--border); color: #fff; }
+    .btn:hover { transform: translateY(-2px); }
+
+    /* --- PANELS --- */
+    
+    /* LEFT PANEL */
+    .left-panel {
+      position: fixed; top: 100px; left: 0; 
+      background: var(--panel-bg); border: 1px solid var(--border); border-left: none;
+      backdrop-filter: blur(10px); border-radius: 0 12px 12px 0; width: 240px;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex; flex-direction: column; z-index: 100;
+      transform: translateX(0);
+    }
+    .left-panel.collapsed { transform: translateX(-100%); }
+
+    /* RIGHT PANEL */
+    .right-panel {
+      position: fixed; bottom: 20px; right: 0; /* Przyklejony do prawej */
+      background: var(--panel-bg); border: 1px solid var(--border); border-right: none;
+      backdrop-filter: blur(10px); border-radius: 12px 0 0 12px; width: 240px;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      display: flex; flex-direction: column; z-index: 100;
+      max-height: 80vh; overflow-y: auto;
+      transform: translateX(0);
+    }
+    .right-panel.collapsed { transform: translateX(100%); }
+
+    .panel-header {
+      padding: 15px; background: rgba(255,255,255,0.05);
+      font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text-muted); 
+    }
+    
+    /* Buttons to toggle panels */
+    .panel-toggle-btn {
+      position: absolute; top: 0; width: 30px; height: 30px;
+      background: var(--accent-blue); color: #fff; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+      font-size: 16px; box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    }
+    .left-btn { right: -30px; border-radius: 0 4px 4px 0; }
+    .right-btn { left: -30px; border-radius: 4px 0 0 4px; box-shadow: -2px 0 10px rgba(0,0,0,0.3); }
+
+    .color-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .color-row:last-child { border-bottom: none; }
+    .color-label { font-size: 11px; color: #ccc; }
+    
+    input[type="color"] {
+      -webkit-appearance: none; border: none; width: 24px; height: 24px;
+      border-radius: 50%; cursor: pointer; background: none; padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 2px solid #fff; border-radius: 50%; }
+
+    /* Right Panel Content Styles */
+    .rp-content { padding: 15px; display: flex; flex-direction: column; gap: 6px; }
+
+    .controls-label { font-size: 10px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 5px; margin-top: 15px; }
+    .controls-label:first-child { margin-top: 0; }
+    
+    .ctrl-btn {
+      background: transparent; border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted); padding: 8px 12px; border-radius: 6px;
+      cursor: pointer; font-size: 11px; text-align: left; transition: all 0.2s;
+    }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .ctrl-btn.active { background: var(--accent-blue); color: #fff; border-color: transparent; font-weight: 600; }
+    .ctrl-btn.reset { border-color: rgba(255, 77, 77, 0.3); color: #ffcccc; }
+    .ctrl-btn.reset:hover { background: rgba(255, 77, 77, 0.2); color: #fff; }
+
+    .settings-group { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .toggle-row { display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 10px; }
+    .toggle-row label { font-size: 11px; color: var(--text-muted); cursor: pointer; flex: 1;}
+    .toggle-checkbox { accent-color: var(--accent-blue); }
+
+    .slider-row { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+    .slider-header { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%;
+      background: #fff; cursor: pointer; margin-top: -5px; box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(255,255,255,0.2); border-radius: 2px; }
+
+    select {
+        width: 100%; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
+        color: #fff; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer;
+    }
+    select option { background: #0b0f1a; color: #fff; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      nav { padding: 20px; }
+      .right-panel { width: 100%; height: auto; border-radius: 12px 12px 0 0; bottom: 0; right: 0; border: none; border-top: 1px solid var(--border); transform: translateY(0); }
+      .right-panel.collapsed { transform: translateY(100%); }
+      .left-panel { top: 70px; } 
+      .hero-container { padding-top: 40vh; }
+      /* Adjust toggle button for mobile if needed, usually simplified */
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="stage"></canvas>
+
+  <div id="ui-wrapper" class="ui-fade">
+    <nav>
+        <div class="logo">WIESZJAK</div>
+        <div class="nav-links">
+        <a href="#">Start</a>
+        <a href="#">Projekty</a>
+        <a href="#">O mnie</a>
+        <a href="#">Proces</a>
+        <div class="lang-switch">
+            <button class="lang-btn active">PL</button>
+            <button class="lang-btn">EN</button>
+        </div>
+        </div>
+    </nav>
+
+    <div class="hero-container">
+        <div class="subtitle">Design & Development</div>
+        <div class="description">Tworzę nowoczesne strony internetowe i aplikacje webowe z pasją do detali, wydajności i minimalizmu.</div>
+        <div class="cta-group">
+        <button class="btn btn-primary">Zobacz projekty</button>
+        <button class="btn btn-secondary">Poznaj proces</button>
+        </div>
+    </div>
+  </div>
+
+  <div class="left-panel" id="leftPanel">
+    <div class="panel-toggle-btn left-btn" onclick="toggleLeftPanel()">⚙</div>
+    <div class="panel-header">Konfiguracja Barw</div>
+    <div class="color-row"><span class="color-label">Cząsteczki (Lewy)</span><input type="color" id="color1" value="#5b8def"></div>
+    <div class="color-row"><span class="color-label">Cząsteczki (Prawy)</span><input type="color" id="color2" value="#bd00ff"></div>
+    <div class="color-row"><span class="color-label">Kolor Pyłu (Ash)</span><input type="color" id="colorAsh" value="#ffffff"></div>
+    <div class="color-row"><span class="color-label">Kolor Flary (Flare)</span><input type="color" id="colorFlare" value="#0b0f1a"></div>
+    <div class="color-row"><span class="color-label">Tekst Końcowy</span><input type="color" id="colorText" value="#ffffff"></div>
+  </div>
+
+  <div class="right-panel" id="rightPanel">
+    <div class="panel-toggle-btn right-btn" onclick="toggleRightPanel()">☰</div>
+    <div class="rp-content">
+        <div class="controls-label">Opcje</div>
+        <button onclick="resetToIdle()" id="btn-reset" class="ctrl-btn reset">⟲ RESET (Idle)</button>
+        
+        <div class="controls-label">Styl Przejścia</div>
+        <select id="transitionSelect">
+            <option value="warp">1. Warp Jump</option>
+            <option value="meteor">2. Meteor Storm (New)</option>
+            <option value="collapse">3. Gravitational Collapse</option>
+            <option value="upload">4. Data Upload (Fade)</option>
+        </select>
+
+        <div class="controls-label">Wybierz animację:</div>
+        <button onclick="triggerTransition('corners')" id="btn-corners" class="ctrl-btn">1. Turbo Rogi</button>
+        <button onclick="triggerTransition('matrix')" id="btn-matrix" class="ctrl-btn">2. Matrix Rain</button>
+        <button onclick="triggerTransition('galaxy')" id="btn-galaxy" class="ctrl-btn">3. Galaktyka</button>
+        <button onclick="triggerTransition('quantum')" id="btn-quantum" class="ctrl-btn">4. Quantum Glitch</button>
+        <button onclick="triggerTransition('split')" id="btn-split" class="ctrl-btn">5. WIESZ | JAK</button>
+        <button onclick="triggerTransition('circuit')" id="btn-circuit" class="ctrl-btn">6. Circuit Shots</button>
+        <button onclick="triggerTransition('crossfire')" id="btn-crossfire" class="ctrl-btn">7. Crossfire</button>
+        
+        <div class="settings-group">
+            <div class="slider-row">
+                <div class="slider-header"><span>Prędkość Animacji</span><span id="speedValue">2.0x</span></div>
+                <input type="range" min="0.1" max="3.0" step="0.1" value="2.0" id="speedSlider">
+            </div>
+            <div class="toggle-row">
+                <input type="checkbox" id="toggleWhiteText" class="toggle-checkbox" checked onchange="toggleSolidText()">
+                <label for="toggleWhiteText">Wyłącz biały tekst</label>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    
+    // --- KONFIGURACJA (Twoje wartości + tailScale) ---
+    
+    const IDLE_CONFIG = { 
+        count: 150, 
+        speed: 1, 
+        sizeBase: 2.0, 
+        alphaBase: 0.4, 
+        alphaVar: 0.4,
+        tailScale: 0 // Ogon dla Idle (opcjonalny)
+    };
+
+    const ASH_CONFIG = { 
+        count: 60, 
+        turbulence: 4.25, 
+        changeChance: 0.96, 
+        friction: 0.98, 
+        sizeMax: 1.5, 
+        alphaBase: 0.3, 
+        alphaVar: 0.3,
+        tailScale: 0.5 // Lekka smuga dla pyłu
+    };
+    
+    const FLARE_CONFIG = { 
+        count: 3, 
+        speedMin: 30.0, 
+        speedMax: 35.0, 
+        glow: 1, 
+        tailScale: 0, // Wyłączony ogon jak chciałeś
+        alphaBase: 0.0, 
+        fadeSpeed: 0.04, 
+        sizeMin: 2, 
+        sizeMax: 4, 
+        turbulence: 2.0, 
+        friction: 0.99 
+    };
+
+    let particles = [];
+    let targetPoints = [];
+    let idleParticles = [];
+    let ashParticles = [];
+    let flareParticles = [];
+    
+    let isIdle = true; 
+    let isTransitioning = false; 
+    let transitionMode = 'warp';
+    let transitionTimer = 0;
+    let nextEffectType = null;
+    let uiVisible = false;
+
+    let currentEffect = 'split'; 
+    
+    const config = {
+      color1: document.getElementById('color1').value,
+      color2: document.getElementById('color2').value,
+      colorAsh: document.getElementById('colorAsh').value,
+      colorFlare: document.getElementById('colorFlare').value,
+      colorText: document.getElementById('colorText').value,
+      disableWhiteText: true,
+      speedMultiplier: 2.0
+    };
+
+    // --- EVENT LISTENERS ---
+    document.getElementById('color1').addEventListener('input', (e) => { config.color1 = e.target.value; updateParticleColors(); });
+    document.getElementById('color2').addEventListener('input', (e) => { config.color2 = e.target.value; updateParticleColors(); });
+    document.getElementById('colorAsh').addEventListener('input', (e) => { config.colorAsh = e.target.value; updateParticleColors(); });
+    document.getElementById('colorFlare').addEventListener('input', (e) => { config.colorFlare = e.target.value; updateParticleColors(); });
+    document.getElementById('colorText').addEventListener('input', (e) => { config.colorText = e.target.value; });
+    
+    document.getElementById('transitionSelect').addEventListener('change', (e) => { transitionMode = e.target.value; });
+
+    function toggleSolidText() { config.disableWhiteText = document.getElementById('toggleWhiteText').checked; }
+    function toggleLeftPanel() { document.getElementById('leftPanel').classList.toggle('collapsed'); }
+    function toggleRightPanel() { document.getElementById('rightPanel').classList.toggle('collapsed'); }
+
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValue = document.getElementById('speedValue');
+    speedSlider.addEventListener('input', (e) => {
+      config.speedMultiplier = parseFloat(e.target.value);
+      speedValue.textContent = config.speedMultiplier.toFixed(1) + 'x';
+    });
+
+    function updateParticleColors() {
+      particles.forEach(p => { if (p.colorType === 1) p.color = config.color1; if (p.colorType === 2) p.color = config.color2; });
+      idleParticles.forEach(p => { p.color = p.colorType === 1 ? config.color1 : config.color2; });
+      ashParticles.forEach(p => p.color = config.colorAsh);
+      flareParticles.forEach(p => p.color = config.colorFlare);
+    }
+
+    // --- SYSTEM INIT ---
+    let textBounds = { minX: 0, maxX: 0 };
+    let textYPos = 0; 
+    let densityStep = 1;
+    const TEXT = "WIESZJAK";
+    const MAX_PARTICLES_DESKTOP = 3500;
+    const MAX_PARTICLES_MOBILE = 2000;
+    
+    function isMobile() { return window.innerWidth < 768; }
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      calculateTargetPoints();
+      if (isIdle && !isTransitioning) initIdle();
+      else if (!isIdle && !isTransitioning) initEffect(currentEffect);
+    }
+
+    // --- 1. IDLE PARTICLE ---
+    class IdleParticle {
+      constructor() {
+        this.x = Math.random() * width; this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * IDLE_CONFIG.speed; this.vy = (Math.random() - 0.5) * IDLE_CONFIG.speed;
+        this.size = Math.random() * IDLE_CONFIG.sizeBase + 0.5;
+        this.colorType = Math.random() > 0.5 ? 1 : 2;
+        this.color = this.colorType === 1 ? config.color1 : config.color2;
+        this.alpha = IDLE_CONFIG.alphaBase + Math.random() * IDLE_CONFIG.alphaVar;
+      }
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0) this.x = width; if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height; if (this.y > height) this.y = 0;
+        this.color = this.colorType === 1 ? config.color1 : config.color2;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color;
+        
+        // IDLE TAIL LOGIC
+        if (IDLE_CONFIG.tailScale > 0) {
+            ctx.beginPath();
+            ctx.lineWidth = this.size; ctx.lineCap = 'round'; ctx.strokeStyle = this.color;
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x - this.vx * IDLE_CONFIG.tailScale * 5, this.y - this.vy * IDLE_CONFIG.tailScale * 5);
+            ctx.stroke();
+        } else {
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+        }
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    // --- 2. ASH PARTICLE ---
+    class AshParticle {
+      constructor() {
+        this.x = Math.random() * width; this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.2; this.vy = (Math.random() - 0.5) * 0.2;
+        this.size = Math.random() * ASH_CONFIG.sizeMax + 0.2; 
+        this.alpha = ASH_CONFIG.alphaBase + Math.random() * ASH_CONFIG.alphaVar; this.color = config.colorAsh;
+      }
+      update() {
+        if (Math.random() > ASH_CONFIG.changeChance) { this.vx += (Math.random() - 0.5) * ASH_CONFIG.turbulence; this.vy += (Math.random() - 0.5) * ASH_CONFIG.turbulence; }
+        this.vx *= ASH_CONFIG.friction; this.vy *= ASH_CONFIG.friction;
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0) this.x = width; if (this.x > width) this.x = 0; if (this.y < 0) this.y = height; if (this.y > height) this.y = 0;
+        this.color = config.colorAsh;
+      }
+      draw() {
+        ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; 
+        
+        // ASH TAIL LOGIC
+        if (ASH_CONFIG.tailScale > 0) {
+            ctx.beginPath();
+            ctx.lineWidth = this.size; ctx.lineCap = 'round'; ctx.strokeStyle = this.color;
+            ctx.moveTo(this.x, this.y);
+            // Mnożnik 5 dla lepszej widoczności
+            ctx.lineTo(this.x - this.vx * ASH_CONFIG.tailScale * 5, this.y - this.vy * ASH_CONFIG.tailScale * 5);
+            ctx.stroke();
+        } else {
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+        }
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    // --- 3. FLARE PARTICLE ---
+    class FlareParticle {
+      constructor() { this.reset(); }
+      reset() {
+        const side = Math.floor(Math.random() * 4);
+        const speed = FLARE_CONFIG.speedMin + Math.random() * (FLARE_CONFIG.speedMax - FLARE_CONFIG.speedMin);
+        if(side === 0) { this.x = Math.random() * width; this.y = -50; this.vy = speed; this.vx = (Math.random()-0.5) * 10; }
+        else if(side === 1) { this.x = width + 50; this.y = Math.random() * height; this.vx = -speed; this.vy = (Math.random()-0.5) * 10; }
+        else if(side === 2) { this.x = Math.random() * width; this.y = height + 50; this.vy = -speed; this.vx = (Math.random()-0.5) * 10; }
+        else { this.x = -50; this.y = Math.random() * height; this.vx = speed; this.vy = (Math.random()-0.5) * 10; }
+        this.size = FLARE_CONFIG.sizeMin + Math.random() * (FLARE_CONFIG.sizeMax - FLARE_CONFIG.sizeMin);
+        this.alpha = 0; this.state = 'in'; this.color = config.colorFlare;
+      }
+      update() {
+        this.vx += (Math.random() - 0.5) * FLARE_CONFIG.turbulence; this.vy += (Math.random() - 0.5) * FLARE_CONFIG.turbulence;
+        this.vx *= FLARE_CONFIG.friction; this.vy *= FLARE_CONFIG.friction;
+        this.x += this.vx; this.y += this.vy;
+        if (this.state === 'in') { this.alpha += FLARE_CONFIG.fadeSpeed; if(this.alpha >= 1) { this.alpha = 1; this.state = 'fly'; } }
+        else if (this.state === 'fly') { if(this.x < -200 || this.x > width + 200 || this.y < -200 || this.y > height + 200) this.state = 'out'; }
+        else if (this.state === 'out') { this.alpha -= FLARE_CONFIG.fadeSpeed; if(this.alpha <= 0) this.reset(); }
+        this.color = config.colorFlare;
+      }
+      draw() {
+        if(this.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.shadowBlur = FLARE_CONFIG.glow;
+        ctx.shadowColor = this.color;
+        ctx.fillStyle = this.color;
+        ctx.strokeStyle = this.color;
+        
+        ctx.beginPath();
+        if (FLARE_CONFIG.tailScale > 0.01) {
+            ctx.lineWidth = this.size;
+            ctx.lineCap = 'round';
+            ctx.moveTo(this.x, this.y);
+            ctx.lineTo(this.x - this.vx * FLARE_CONFIG.tailScale, this.y - this.vy * FLARE_CONFIG.tailScale);
+            ctx.stroke();
+        } else {
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+            ctx.fill();
+        }
+        ctx.restore();
+      }
+    }
+
+    function initIdle() {
+      idleParticles = []; ashParticles = []; flareParticles = [];
+      for(let i=0; i<IDLE_CONFIG.count; i++) idleParticles.push(new IdleParticle());
+      for(let i=0; i<ASH_CONFIG.count; i++) ashParticles.push(new AshParticle());
+      for(let i=0; i<FLARE_CONFIG.count; i++) flareParticles.push(new FlareParticle());
+    }
+
+    function calculateTargetPoints() {
+      const fontSize = isMobile() ? width * 0.16 : Math.min(width * 0.11, 130);
+      ctx.font = `900 ${fontSize}px 'Inter', sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      textYPos = height * 0.35;
+      ctx.fillStyle = '#fff'; ctx.clearRect(0, 0, width, height); ctx.fillText(TEXT, width / 2, textYPos);
+      const metrics = ctx.measureText(TEXT);
+      const textWidth = metrics.width; const textHeight = fontSize * 1.4;
+      const startX = Math.floor((width - textWidth) / 2); const startY = Math.floor(textYPos - textHeight/2);
+      textBounds.minX = startX; textBounds.maxX = startX + textWidth;
+      const imgData = ctx.getImageData(startX, startY, textWidth, textHeight);
+      const data = imgData.data; targetPoints = [];
+      let pixelCountEstimate = 0; for (let i = 3; i < data.length; i += 4) { if (data[i] > 128) pixelCountEstimate++; }
+      const maxParticles = isMobile() ? MAX_PARTICLES_MOBILE : MAX_PARTICLES_DESKTOP;
+      densityStep = Math.max(1, Math.floor(Math.sqrt(pixelCountEstimate / maxParticles)));
+      for (let y = 0; y < textHeight; y += densityStep) {
+        for (let x = 0; x < textWidth; x += densityStep) {
+          const alpha = data[(y * Math.floor(textWidth) + x) * 4 + 3];
+          if (alpha > 128) { targetPoints.push({ x: x + startX, y: y + startY, row: y }); }
+        }
+      }
+      ctx.clearRect(0, 0, width, height);
+    }
+
+    class Particle {
+      constructor(tx, ty, effectType, rowData) {
+        this.tx = tx; this.ty = ty; this.joined = false;
+        const speedMod = isMobile() ? 0.7 : 1.0; this.delay = 0; this.colorType = 1; 
+        if (effectType === 'corners') {
+          const corner = Math.floor(Math.random() * 4);
+          if (corner === 0) { this.x = 0; this.y = 0; } else if (corner === 1) { this.x = width; this.y = 0; } else if (corner === 2) { this.x = width; this.y = height; } else { this.x = 0; this.y = height; }
+          this.speed = (0.01 + Math.random() * 0.02) * speedMod; this.colorType = 1;
+        } else if (effectType === 'matrix') {
+          this.x = tx; this.y = -Math.random() * height * 1.5; this.speed = (8 + Math.random() * 12) * speedMod; this.colorType = 1;
+        } else if (effectType === 'galaxy') {
+          const angle = Math.random() * Math.PI * 2; const radius = Math.max(width, height) * 0.7; 
+          this.x = width/2 + Math.cos(angle) * radius; this.y = textYPos + Math.sin(angle) * radius;
+          this.angle = angle; this.radius = radius; this.colorType = 1;
+        } else if (effectType === 'quantum') {
+          this.x = tx; this.y = ty; this.chaos = 50; this.colorType = Math.random() > 0.5 ? 1 : 2;
+        } else if (effectType === 'split') {
+          const splitPoint = textBounds.minX + (textBounds.maxX - textBounds.minX) * 0.60;
+          if (tx < splitPoint) { this.x = -Math.random() * width * 0.3; this.colorType = 1; } else { this.x = width + Math.random() * width * 0.3; this.colorType = 2; }
+          this.y = ty; this.speed = (0.04 + Math.random() * 0.03) * speedMod;
+        } else if (effectType === 'circuit') {
+          const side = Math.floor(Math.random() * 4);
+          if (side === 0) { this.x = Math.random() * width; this.y = -10; } else if (side === 1) { this.x = width + 10; this.y = Math.random() * height; } else if (side === 2) { this.x = Math.random() * width; this.y = height + 10; } else { this.x = -10; this.y = Math.random() * height; }
+          this.speed = (6 + Math.random() * 6) * speedMod; this.delay = Math.random() * 150; this.colorType = 2;
+        } else if (effectType === 'crossfire') {
+           this.y = ty; const rowIndex = Math.floor(rowData / densityStep);
+           if (rowIndex % 2 === 0) { this.x = -Math.random() * width * 0.5; this.colorType = 1; } else { this.x = width + Math.random() * width * 0.5; this.colorType = 2; }
+           this.speed = (0.04 + Math.random() * 0.02) * speedMod;
+        }
+        this.color = (this.colorType === 1) ? config.color1 : config.color2;
+      }
+    }
+
+    // --- TRANSITION LOGIC ---
+
+    window.triggerTransition = function(targetType) {
+        if(isTransitioning) return; 
+        isTransitioning = true;
+        nextEffectType = targetType;
+        transitionTimer = 0;
+        
+        // Hide UI immediately on transition start
+        document.getElementById('ui-wrapper').classList.remove('visible');
+        uiVisible = false;
+        
+        document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${targetType}`).classList.add('active');
+    };
+
+    window.resetToIdle = function() {
+      isIdle = true; isTransitioning = false; particles = []; initIdle();
+      document.getElementById('ui-wrapper').classList.remove('visible');
+      uiVisible = false;
+      document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    function initEffect(type) { particles = targetPoints.map(p => new Particle(p.x, p.y, type, p.row)); }
+
+    function runTransitionStep() {
+        transitionTimer++;
+        const allArrays = [...idleParticles, ...ashParticles, ...flareParticles];
+        
+        let finished = false;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        if (transitionMode === 'warp') {
+            // 1. WARP JUMP
+            allArrays.forEach(p => {
+                const dx = p.x - centerX;
+                const dy = p.y - centerY;
+                const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                p.x += (dx / dist) * (transitionTimer * 2);
+                p.y += (dy / dist) * (transitionTimer * 2);
+            });
+            if (transitionTimer > 40) finished = true;
+
+        } else if (transitionMode === 'meteor') {
+            // 2. METEOR STORM (Zamiast Big Bang)
+            // Wszystkie cząsteczki lecą po skosie bardzo szybko
+            allArrays.forEach(p => {
+                p.x += 30 + Math.random() * 10;
+                p.y -= 15 + Math.random() * 5;
+                // Rozmycie robi się automatycznie w draw bo są szybkie, ale dodajmy tail visual logic w animate
+            });
+            if (transitionTimer > 40) finished = true;
+
+        } else if (transitionMode === 'collapse') {
+            // 3. GRAVITATIONAL COLLAPSE
+            if (transitionTimer < 30) {
+               allArrays.forEach(p => {
+                   p.x += (centerX - p.x) * 0.15;
+                   p.y += (centerY - p.y) * 0.15;
+               });
+            } 
+            else if (transitionTimer < 35) { /* Flash Wait */ } 
+            else {
+               const waveTimer = transitionTimer - 35;
+               const radius = waveTimer * 40; 
+               allArrays.forEach(p => {
+                   const dx = p.x - centerX;
+                   const dy = p.y - centerY;
+                   const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+                   if (dist < radius) {
+                       const force = 30 + Math.random() * 20;
+                       p.x += (dx / dist) * force;
+                       p.y += (dy / dist) * force;
+                       p.x += (Math.random() - 0.5) * 20;
+                       p.y += (Math.random() - 0.5) * 20;
+                   }
+               });
+            }
+            if (transitionTimer > 70) finished = true;
+
+        } else if (transitionMode === 'upload') {
+            // 4. DATA UPLOAD
+            allArrays.forEach(p => {
+                p.y -= (transitionTimer * 2) + Math.random() * 10;
+                p.x += (Math.random() - 0.5) * 2;
+            });
+            if (transitionTimer > 40) finished = true;
+        }
+
+        if (finished) {
+            isTransitioning = false;
+            isIdle = false;
+            currentEffect = nextEffectType;
+            idleParticles = []; ashParticles = []; flareParticles = [];
+            initEffect(currentEffect);
+        }
+    }
+
+    // --- MAIN LOOP ---
+    function animate() {
+      if (isTransitioning) {
+          if (transitionMode === 'collapse' && transitionTimer >= 30 && transitionTimer < 35) {
+              ctx.fillStyle = '#fff'; 
+              ctx.fillRect(0, 0, width, height);
+          } else {
+              ctx.fillStyle = 'rgba(5, 8, 15, 0.3)';
+              ctx.fillRect(0, 0, width, height);
+          }
+          runTransitionStep();
+          
+          [...idleParticles, ...ashParticles, ...flareParticles].forEach(p => {
+              if (transitionMode === 'upload' || transitionMode === 'meteor') {
+                  // Draw lines for fast movement
+                  ctx.beginPath();
+                  ctx.strokeStyle = p.color;
+                  ctx.lineWidth = p.size || 2;
+                  ctx.moveTo(p.x, p.y);
+                  if (transitionMode === 'meteor') ctx.lineTo(p.x - 40, p.y + 20);
+                  else ctx.lineTo(p.x, p.y + 30);
+                  ctx.stroke();
+              } else if(p.draw) {
+                  p.draw();
+              } else { 
+                  ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size || 2, p.size || 2); 
+              }
+          });
+          requestAnimationFrame(animate);
+          return;
+      }
+
+      if (currentEffect === 'quantum' && !isIdle) ctx.fillStyle = 'rgba(5, 8, 15, 1)';
+      else if (currentEffect === 'matrix' && !isIdle) ctx.fillStyle = 'rgba(5, 8, 15, 0.4)';
+      else ctx.fillStyle = 'rgba(5, 8, 15, 0.25)';
+      ctx.fillRect(0, 0, width, height);
+
+      if (isIdle) {
+         idleParticles.forEach(p => { p.update(); p.draw(); });
+         ashParticles.forEach(p => { p.update(); p.draw(); });
+         flareParticles.forEach(p => { p.update(); p.draw(); });
+         requestAnimationFrame(animate);
+         return; 
+      }
+
+      const pSize = isMobile() ? 1.25 : 2.0; 
+      let allJoined = true; 
+
+      particles.forEach(p => {
+        p.color = (p.colorType === 1) ? config.color1 : config.color2;
+        let currentSpeed = p.speed * config.speedMultiplier;
+
+        if (currentEffect === 'corners') {
+           if (!p.joined) { p.x += (p.tx - p.x) * currentSpeed; p.y += (p.ty - p.y) * currentSpeed; if (Math.abs(p.tx - p.x) < 0.8 && Math.abs(p.ty - p.y) < 0.8) p.joined = true; }
+        } else if (currentEffect === 'matrix') { if (p.y < p.ty) p.y += currentSpeed; else p.y = p.ty; 
+        } else if (currentEffect === 'galaxy') {
+          const dx = p.tx - width/2; const dy = p.ty - textYPos; const targetRadius = Math.sqrt(dx*dx + dy*dy); const targetAngle = Math.atan2(dy, dx);
+          if (!p.joined) { const ease = (isMobile() ? 0.03 : 0.05) * config.speedMultiplier; p.radius -= (p.radius - targetRadius) * ease; p.angle += (targetAngle - p.angle) * ease; p.x = width/2 + Math.cos(p.angle) * p.radius; p.y = textYPos + Math.sin(p.angle) * p.radius; if (Math.abs(p.radius - targetRadius) < 1) p.joined = true; } else { p.x = p.tx; p.y = p.ty; }
+        } else if (currentEffect === 'quantum') {
+           if (p.chaos > 0) p.chaos *= 0.95; const offsetX = (Math.random() - 0.5) * p.chaos; const offsetY = (Math.random() - 0.5) * p.chaos; ctx.fillStyle = p.chaos > 2 ? p.color : (config.disableWhiteText ? p.color : config.colorText); ctx.fillRect(p.x + offsetX, p.y + offsetY, pSize, pSize); 
+           if(p.chaos > 1) allJoined = false; 
+           return; 
+        } else if (currentEffect === 'split' || currentEffect === 'crossfire') {
+          const dx = p.tx - p.x; p.x += dx * currentSpeed; if (Math.abs(dx) < 1) { p.x = p.tx; p.joined = true; } 
+        } else if (currentEffect === 'circuit') {
+           if (p.delay > 0) { p.delay--; allJoined = false; return; }
+           if (!p.joined) { const dx = p.tx - p.x; const dy = p.ty - p.y; if (Math.abs(dx) > Math.abs(dy)) p.x += Math.sign(dx) * currentSpeed; else p.y += Math.sign(dy) * currentSpeed; if (Math.abs(dx) < currentSpeed && Math.abs(dy) < currentSpeed) { p.x = p.tx; p.y = p.ty; p.joined = true; } }
+        }
+
+        if (!p.joined && currentEffect !== 'quantum' && currentEffect !== 'matrix') allJoined = false;
+        if (currentEffect === 'matrix' && p.y < p.ty) allJoined = false;
+
+        let isAtTarget = p.joined || (currentEffect === 'matrix' && p.y >= p.ty);
+        if (isAtTarget) { ctx.fillStyle = config.disableWhiteText ? p.color : config.colorText; } else { ctx.fillStyle = p.color; }
+        if (currentEffect === 'matrix' && !isAtTarget) { ctx.fillRect(p.x, p.y, pSize, pSize * 3); } else { ctx.fillRect(p.x, p.y, pSize, pSize); }
+      });
+
+      if (allJoined && !uiVisible) {
+          document.getElementById('ui-wrapper').classList.add('visible');
+          uiVisible = true;
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+       clearTimeout(window.resizeTimer); window.resizeTimer = setTimeout(resize, 100);
+    });
+    
+    setTimeout(() => { resize(); initIdle(); animate(); }, 100);
+  </script>
+</body>
+</html>
