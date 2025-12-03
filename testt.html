@@ -26,9 +26,11 @@
       overflow-x: hidden;
     }
 
+    /* --- CANVAS POSITIONING FIX --- */
     canvas {
       display: block;
-      position: fixed;
+      /* ZMIANA: absolute zamiast fixed. Teraz scrolluje się ze stroną. */
+      position: absolute; 
       top: 0;
       left: 0;
       width: 100%;
@@ -37,36 +39,54 @@
       pointer-events: none;
     }
 
-    /* --- UI LAYERS --- */
-    nav, .hero-container, .right-panel, .left-panel {
+    /* --- LAYOUT STRUCTURE --- */
+    nav, .right-panel, .left-panel {
       position: relative;
-      z-index: 10;
+      z-index: 100; /* Menu zawsze na wierzchu */
     }
 
-    /* UI Fade Logic */
-    .ui-fade {
-      opacity: 0;
-      transition: opacity 1.5s ease-in-out;
-      pointer-events: none;
-    }
-    .ui-fade.visible {
-      opacity: 1;
-      pointer-events: auto;
+    /* Sekcja Hero - kontener dla Canvasa i Treści */
+    .hero-container {
+      position: relative; /* Ważne dla canvas: absolute */
+      height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* ZMIANA: Treść wypychamy na dół flexem, a nie paddingiem */
+      justify-content: flex-end; 
+      padding-bottom: 15vh; /* Odstęp od dołu */
+      box-sizing: border-box;
     }
 
-    /* Override for panels so they are always accessible */
-    .left-panel, .right-panel {
-      opacity: 1 !important;
-      pointer-events: auto !important;
+    /* Kontener treści, który ma znikać/pojawiać się */
+    #ui-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        max-width: 700px;
+        padding: 0 20px;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+        pointer-events: none;
+    }
+    
+    #ui-content.visible {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     nav {
+      position: absolute;
+      top: 0;
+      left: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 20px 40px;
       width: 100%;
       box-sizing: border-box;
+      z-index: 50;
     }
 
     .logo { font-weight: 900; font-size: 20px; letter-spacing: 1px; }
@@ -82,17 +102,6 @@
     }
     .lang-btn.active { border-color: var(--accent-blue); color: #fff; }
 
-    .hero-container {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding-top: 45vh; 
-      pointer-events: none; 
-    }
-    .hero-container > * { pointer-events: auto; }
-
     .subtitle {
       color: var(--accent-blue);
       font-weight: 700;
@@ -104,16 +113,15 @@
 
     .description {
       color: var(--text-muted);
-      max-width: 600px;
       line-height: 1.6;
       margin-bottom: 40px;
       font-size: 16px;
-      padding: 0 20px;
     }
 
     .cta-group {
       display: flex;
       gap: 20px;
+      justify-content: center;
     }
 
     .btn {
@@ -124,7 +132,7 @@
     .btn-secondary { background: transparent; border: 1px solid var(--border); color: #fff; }
     .btn:hover { transform: translateY(-2px); }
 
-    /* --- PANELS CORE --- */
+    /* --- PANELS --- */
     .left-panel, .right-panel {
       position: fixed; 
       background: var(--panel-bg); 
@@ -132,23 +140,18 @@
       backdrop-filter: blur(10px); 
       display: flex; 
       flex-direction: column; 
-      z-index: 100;
+      z-index: 999; /* Bardzo wysoko */
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      /* Kluczowe: overflow visible żeby guzik wystawał */
       overflow: visible; 
     }
 
-    /* Scrollable content inside panels */
     .panel-scroll-area {
         overflow-y: auto;
         max-height: 80vh;
         padding: 15px;
-        /* Ukrywanie paska scrolla dla estetyki */
         scrollbar-width: thin;
-        scrollbar-color: var(--accent-blue) transparent;
     }
 
-    /* LEFT PANEL STYLES */
     .left-panel {
       top: 100px; left: 0; 
       border-left: none; border-radius: 0 12px 12px 0; width: 240px;
@@ -156,7 +159,6 @@
     }
     .left-panel.collapsed { transform: translateX(-100%); }
 
-    /* RIGHT PANEL STYLES */
     .right-panel {
       bottom: 20px; right: 0; 
       border-right: none; border-radius: 12px 0 0 12px; width: 240px;
@@ -165,29 +167,18 @@
     .right-panel.collapsed { transform: translateX(100%); }
 
     .panel-header {
-      padding: 15px 15px 0 15px; background: transparent;
+      padding: 15px 15px 0 15px;
       font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
       color: var(--text-muted); 
     }
     
-    /* TOGGLE BUTTONS */
     .panel-toggle-btn {
-      position: absolute; 
-      top: 0; 
-      width: 30px; 
-      height: 30px;
-      background: var(--accent-blue); 
-      color: #fff; 
-      display: flex;
-      align-items: center; 
-      justify-content: center; 
-      cursor: pointer;
-      font-size: 16px; 
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 101;
+      position: absolute; top: 0; width: 30px; height: 30px;
+      background: var(--accent-blue); color: #fff; display: flex;
+      align-items: center; justify-content: center; cursor: pointer;
+      font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 1000;
     }
-    
-    /* Desktop Positioning */
     .left-btn { right: -30px; border-radius: 0 4px 4px 0; }
     .right-btn { left: -30px; border-radius: 4px 0 0 4px; }
 
@@ -239,49 +230,26 @@
     }
     select option { background: #0b0f1a; color: #fff; }
 
-    /* MOBILE ADJUSTMENTS */
     @media (max-width: 768px) {
       .nav-links { display: none; }
       nav { padding: 20px; }
-      .hero-container { padding-top: 40vh; }
+      .hero-container { 
+          /* Mobile layout tweak */
+          padding-bottom: 20vh; 
+      }
       .left-panel { top: 70px; } 
-
-      /* Mobile Right Panel (Bottom Sheet) */
-      .right-panel {
-        width: 100%; 
-        height: auto; 
-        border-radius: 12px 12px 0 0; 
-        bottom: 0; 
-        right: 0; 
-        border: none; 
-        border-top: 1px solid var(--border); 
-        transform: translateY(0);
-      }
+      .right-panel { width: 100%; height: auto; border-radius: 12px 12px 0 0; bottom: 0; right: 0; border: none; border-top: 1px solid var(--border); transform: translateY(0); }
       .right-panel.collapsed { transform: translateY(100%); }
-      
-      /* Mobile Toggle Button (Sticks out top) */
-      .right-btn {
-        left: auto;
-        right: 20px; /* Align Right */
-        top: -40px;  /* Move Up */
-        width: 100px; /* Wider button */
-        height: 40px;
-        border-radius: 8px 8px 0 0;
-        font-size: 12px;
-        font-weight: bold;
-        text-transform: uppercase;
-        content: "Opcje";
-      }
-      /* Fake content for button text */
+      .right-btn { left: auto; right: 20px; top: -40px; width: 100px; height: 40px; border-radius: 8px 8px 0 0; font-size: 12px; font-weight: bold; }
       .right-btn::after { content: "OPCJE ▲"; }
     }
   </style>
 </head>
 <body>
 
-  <canvas id="stage"></canvas>
+  <div class="hero-container">
+    <canvas id="stage"></canvas>
 
-  <div id="ui-wrapper" class="ui-fade">
     <nav>
         <div class="logo">WIESZJAK</div>
         <div class="nav-links">
@@ -296,9 +264,9 @@
         </div>
     </nav>
 
-    <div class="hero-container">
+    <div id="ui-content">
         <div class="subtitle">Design & Development</div>
-        <div class="description">Tworzę nowoczesne strony internetowe i aplikacje webowe z pasją do detali, wydajności i minimalizmu.</div>
+        <div class="description">Tworzę nowoczesne strony internetowe i aplikacje webowe z pasją do detali, wydajności i minimalizmu. Skupiam się na dostarczaniu realnej wartości.</div>
         <div class="cta-group">
         <button class="btn btn-primary">Zobacz projekty</button>
         <button class="btn btn-secondary">Poznaj proces</button>
@@ -320,7 +288,6 @@
 
   <div class="right-panel" id="rightPanel">
     <div class="panel-toggle-btn right-btn" onclick="toggleRightPanel()"></div>
-    
     <div class="panel-scroll-area">
         <div class="controls-label" style="margin-top:0;">Opcje</div>
         <button onclick="resetToIdle()" id="btn-reset" class="ctrl-btn reset">⟲ RESET (Idle)</button>
@@ -328,9 +295,9 @@
         <div class="controls-label">Styl Przejścia</div>
         <select id="transitionSelect">
             <option value="warp">1. Warp Jump</option>
-            <option value="static">2. Cyber Static (Noise)</option>
+            <option value="static">2. Cyber Static</option>
             <option value="collapse">3. Gravitational Collapse</option>
-            <option value="upload">4. Data Upload (Fade)</option>
+            <option value="upload">4. Data Upload</option>
         </select>
 
         <div class="controls-label">Wybierz animację:</div>
@@ -361,7 +328,7 @@
     
     let width, height;
     
-    // --- KONFIGURACJA (DEFAULT) ---
+    // --- KONFIGURACJA ---
     const IDLE_CONFIG = { count: 150, speed: 1, sizeBase: 2.0, alphaBase: 0.4, alphaVar: 0.4, tailScale: 0 };
     const ASH_CONFIG = { count: 60, turbulence: 4.25, changeChance: 0.96, friction: 0.98, sizeMax: 1.5, alphaBase: 0.3, alphaVar: 0.3, tailScale: 0 };
     const FLARE_CONFIG = { count: 3, speedMin: 30.0, speedMax: 35.0, glow: 1, tailScale: 0, alphaBase: 0.0, fadeSpeed: 0.04, sizeMin: 2, sizeMax: 4, turbulence: 2.0, friction: 0.99 };
@@ -391,12 +358,13 @@
       speedMultiplier: 2.0
     };
 
-    // --- LISTENERS ---
+    // --- EVENT LISTENERS ---
     document.getElementById('color1').addEventListener('input', (e) => { config.color1 = e.target.value; updateParticleColors(); });
     document.getElementById('color2').addEventListener('input', (e) => { config.color2 = e.target.value; updateParticleColors(); });
     document.getElementById('colorAsh').addEventListener('input', (e) => { config.colorAsh = e.target.value; updateParticleColors(); });
     document.getElementById('colorFlare').addEventListener('input', (e) => { config.colorFlare = e.target.value; updateParticleColors(); });
     document.getElementById('colorText').addEventListener('input', (e) => { config.colorText = e.target.value; });
+    
     document.getElementById('transitionSelect').addEventListener('change', (e) => { transitionMode = e.target.value; });
 
     function toggleSolidText() { config.disableWhiteText = document.getElementById('toggleWhiteText').checked; }
@@ -428,7 +396,7 @@
 
     function resize() {
       width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      height = canvas.height = window.innerHeight; // Canvas always viewport height
       calculateTargetPoints();
       if (isIdle && !isTransitioning) initIdle();
       else if (!isIdle && !isTransitioning) initEffect(currentEffect);
@@ -539,7 +507,10 @@
       const fontSize = isMobile() ? width * 0.16 : Math.min(width * 0.11, 130);
       ctx.font = `900 ${fontSize}px 'Inter', sans-serif`;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      textYPos = height * 0.35;
+      
+      // POSITIONING FIX:
+      textYPos = isMobile() ? height * 0.30 : height * 0.35; // Wyżej na mobile
+      
       ctx.fillStyle = '#fff'; ctx.clearRect(0, 0, width, height); ctx.fillText(TEXT, width / 2, textYPos);
       const metrics = ctx.measureText(TEXT);
       const textWidth = metrics.width; const textHeight = fontSize * 1.4;
@@ -593,21 +564,31 @@
     }
 
     // --- TRANSITION LOGIC ---
+
     window.triggerTransition = function(targetType) {
         if(isTransitioning) return; 
         isTransitioning = true;
         nextEffectType = targetType;
         transitionTimer = 0;
-        document.getElementById('ui-wrapper').classList.remove('visible');
+        
+        // Hide UI immediately on transition start
+        document.getElementById('ui-content').classList.remove('visible');
         uiVisible = false;
+        
+        // AUTO COLLAPSE PANELS
+        document.getElementById('leftPanel').classList.add('collapsed');
+        document.getElementById('rightPanel').classList.add('collapsed');
+        
         document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${targetType}`).classList.add('active');
     };
 
     window.resetToIdle = function() {
       isIdle = true; isTransitioning = false; particles = []; initIdle();
-      document.getElementById('ui-wrapper').classList.remove('visible');
+      document.getElementById('ui-content').classList.remove('visible');
       uiVisible = false;
+      document.getElementById('leftPanel').classList.add('collapsed');
+      document.getElementById('rightPanel').classList.add('collapsed');
       document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
     }
 
@@ -629,11 +610,9 @@
             if (transitionTimer > 40) finished = true;
 
         } else if (transitionMode === 'static') {
-            // 2. CYBER STATIC (Noise)
             allArrays.forEach(p => {
                 p.x += (Math.random() - 0.5) * 15;
                 p.y += (Math.random() - 0.5) * 15;
-                // Glitch color simulation via drawing
                 if(p.alpha > 0) p.alpha -= 0.05;
             });
             if (transitionTimer > 30) finished = true;
@@ -680,7 +659,6 @@
           
           [...idleParticles, ...ashParticles, ...flareParticles].forEach(p => {
               if (transitionMode === 'static') {
-                  // Static Effect Draw
                   if(p.alpha > 0.1) {
                       ctx.fillStyle = Math.random() > 0.5 ? '#fff' : (Math.random() > 0.5 ? '#0ff' : '#f0f');
                       ctx.fillRect(p.x, p.y, Math.random()*3, Math.random()*3);
@@ -737,7 +715,7 @@
       });
 
       if (allJoined && !uiVisible) {
-          document.getElementById('ui-wrapper').classList.add('visible');
+          document.getElementById('ui-content').classList.add('visible');
           uiVisible = true;
       }
 
