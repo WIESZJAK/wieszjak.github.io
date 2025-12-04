@@ -157,8 +157,9 @@
             float: right;
             font-weight: bold;
             color: var(--accent-green);
-            font-size: 18px;
+            font-size: 20px;
             transition: transform 0.3s;
+            margin-left: 10px;
         }
 
         .tech-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
@@ -178,6 +179,7 @@
         /* CENY */
         .price-market {
             color: var(--accent-red);
+            text-decoration: line-through;
             text-decoration-thickness: 2px;
             font-size: 13px;
             opacity: 0.8;
@@ -269,14 +271,117 @@
         .bar-orange { background: linear-gradient(90deg, #ef6c00, #ffa726); }
         .bar-green { background: linear-gradient(90deg, #00bfa5, var(--accent-green)); box-shadow: 0 0 10px rgba(0, 230, 118, 0.2); }
 
+        /* --- MOBILE / RESPONSIVE DESIGN --- */
+        @media (max-width: 768px) {
+            body { padding: 10px 5px; }
+            .container { padding: 20px 15px; }
+            
+            /* Header Stack */
+            header { flex-direction: column; gap: 20px; }
+            .meta-box { text-align: left; width: 100%; border-top: 1px solid #333; padding-top: 15px; }
+            h1 { font-size: 24px; }
+
+            /* Table to Cards Transformation */
+            .cost-table, .cost-table tbody, .cost-table tr, .cost-table td {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            /* Hide Table Headers */
+            .cost-table thead { display: none; }
+
+            /* Stylizacja sekcji jako nagłówków */
+            .section-header td {
+                margin-top: 20px;
+                border-radius: 4px;
+            }
+
+            /* Wiersze główne jako karty */
+            .cost-table tr:not(.detail-row):not(.section-header) {
+                background: #252525;
+                margin-bottom: 10px;
+                border: 1px solid #333;
+                border-radius: 8px;
+                position: relative;
+                padding-bottom: 10px;
+            }
+
+            /* Komórki wewnątrz karty */
+            .cost-table td {
+                padding: 10px 15px;
+                border-bottom: none; /* Usuwamy linie tabeli */
+                background: transparent !important;
+            }
+
+            /* Pierwsza komórka (Tytuł) */
+            .cost-table td:nth-child(1) {
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+            }
+
+            /* Ceny na mobile */
+            .cost-table td:nth-child(2), 
+            .cost-table td:nth-child(3) {
+                display: inline-block;
+                width: 48%; /* Obok siebie */
+                vertical-align: top;
+            }
+
+            .cost-table td:nth-child(2):before {
+                content: "Rynkowo:";
+                display: block;
+                font-size: 10px;
+                color: #666;
+                text-transform: uppercase;
+                margin-bottom: 2px;
+            }
+
+            .cost-table td:nth-child(3):before {
+                content: "Moja cena:";
+                display: block;
+                font-size: 10px;
+                color: var(--accent-green);
+                text-transform: uppercase;
+                margin-bottom: 2px;
+            }
+
+            /* Szczegóły rozwijane */
+            .detail-content {
+                padding: 15px;
+                font-size: 12px;
+            }
+
+            /* Grid Analizy na jedną kolumnę */
+            .analysis-grid { grid-template-columns: 1fr; }
+
+            /* Wykres na mobile */
+            .chart-row {
+                grid-template-columns: 1fr; /* Stack */
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+            .chart-label { text-align: left; margin-bottom: 5px; }
+
+            .total-box {
+                padding: 20px;
+                text-align: center;
+            }
+            .total-value { font-size: 28px; }
+        }
+
         @media print {
             body { background: #fff; color: #000; }
             .container { box-shadow: none; border: none; width: 100%; padding: 0; }
             .print-btn, .expand-icon { display: none; }
             .detail-row td { display: table-cell !important; background: #fff; color: #000; } 
             .detail-content { color: #333; border-left: 2px solid #000; }
-            .cost-table th { background: #eee; color: #000; }
-            .cost-table td { border-bottom: 1px solid #ccc; background: #fff !important; }
+            .cost-table th { background: #eee; color: #000; display: table-cell !important; } /* Przywróć nagłówki w druku */
+            .cost-table { display: table; } /* Przywróć tabelę w druku */
+            .cost-table tbody, .cost-table tr, .cost-table td { display: table-row-group; width: auto; }
+            .cost-table tr { display: table-row; }
+            .cost-table td { display: table-cell; border-bottom: 1px solid #ccc; background: #fff !important; width: auto !important; }
+            .cost-table td:nth-child(2):before, .cost-table td:nth-child(3):before { content: none; } /* Usuń etykiety mobilne w druku */
+            
             .price-free { border: 1px solid #000; color: #000; background: none; }
             .total-box { background: #fff; border: 2px solid #000; color: #000; }
             .total-value { color: #000; }
@@ -299,14 +404,14 @@
         </div>
     </header>
 
-    <p style="font-size: 12px; color: #666; margin-bottom: 20px;">* Kliknij w wiersz tabeli, aby zobaczyć szczegóły techniczne modułu.</p>
+    <p style="font-size: 12px; color: #666; margin-bottom: 20px;">* Kliknij w wiersz tabeli (lub "+" na telefonie), aby zobaczyć szczegóły techniczne modułu.</p>
 
     <table class="cost-table">
         <thead>
             <tr>
                 <th style="width: 50%">Moduł i Zakres Prac</th>
-                <th style="width: 20%">Wycena Rynkowa</th>
-                <th style="width: 20%">Cena Po-znajomości</th>
+                <th style="width: 25%">Wycena Rynkowa</th>
+                <th style="width: 25%">Cena Minimalna</th>
             </tr>
         </thead>
         <tbody>
@@ -476,13 +581,22 @@
         
         if (nextRow && nextRow.classList.contains('detail-row')) {
             const cell = nextRow.querySelector('td');
-            if (cell.style.display === 'block') {
+            // Check computed style for safety
+            const displayStyle = window.getComputedStyle(cell).display;
+            
+            if (displayStyle === 'block' || displayStyle === 'table-cell') {
                 cell.style.display = 'none';
-                icon.innerHTML = '+';
+                if(icon) icon.innerHTML = '+';
                 row.style.background = '';
             } else {
-                cell.style.display = 'block';
-                icon.innerHTML = '-';
+                // Determine display type based on screen width
+                if (window.innerWidth <= 768) {
+                    cell.style.display = 'block';
+                } else {
+                    cell.style.display = 'table-cell';
+                }
+                
+                if(icon) icon.innerHTML = '-';
                 row.style.background = '#252525';
             }
         }
