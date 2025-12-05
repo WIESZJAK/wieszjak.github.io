@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Specyfikacja Techniczna i Kosztorys B2B</title>
+    <title>Proposal & Cost Estimate</title>
     <style>
         :root {
             --bg-color: #121212;
@@ -25,6 +25,7 @@
             padding: 40px 20px;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -35,6 +36,38 @@
             border-radius: 12px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        /* --- LANG SWITCHER --- */
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            background: #252525;
+            border-radius: 20px;
+            padding: 3px;
+            border: 1px solid #444;
+            z-index: 10;
+        }
+
+        .lang-btn {
+            background: none;
+            border: none;
+            color: #888;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
+            background: var(--accent-green);
+            color: #000;
+            box-shadow: 0 2px 10px rgba(0, 230, 118, 0.3);
         }
 
         /* --- HEADER --- */
@@ -45,6 +78,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            margin-top: 10px;
         }
 
         h1 {
@@ -120,15 +154,14 @@
             border-bottom: 1px solid var(--border-color);
             vertical-align: top;
             background: var(--card-bg);
-            cursor: pointer; /* Wskazuje klikalność */
+            cursor: pointer;
         }
 
-        /* Wiersz szczegółów (ukryty) */
         .detail-row td {
             padding: 0;
             background-color: var(--detail-bg);
             border-bottom: 1px solid var(--border-color);
-            display: none; /* Domyślnie ukryty */
+            display: none;
             cursor: default;
         }
 
@@ -179,6 +212,7 @@
         /* CENY */
         .price-market {
             color: var(--accent-red);
+            text-decoration: line-through;
             text-decoration-thickness: 2px;
             font-size: 13px;
             opacity: 0.8;
@@ -273,30 +307,17 @@
         /* --- MOBILE / RESPONSIVE DESIGN --- */
         @media (max-width: 768px) {
             body { padding: 10px 5px; }
-            .container { padding: 20px 15px; }
+            .container { padding: 20px 15px; margin-top: 30px; }
+            .lang-switcher { top: -40px; right: 10px; }
             
-            /* Header Stack */
-            header { flex-direction: column; gap: 20px; }
+            header { flex-direction: column; gap: 20px; margin-top: 0; }
             .meta-box { text-align: left; width: 100%; border-top: 1px solid #333; padding-top: 15px; }
             h1 { font-size: 24px; }
 
-            /* Table to Cards Transformation */
-            .cost-table, .cost-table tbody, .cost-table tr, .cost-table td {
-                display: block;
-                width: 100%;
-                box-sizing: border-box;
-            }
-
-            /* Hide Table Headers */
+            .cost-table, .cost-table tbody, .cost-table tr, .cost-table td { display: block; width: 100%; box-sizing: border-box; }
             .cost-table thead { display: none; }
-
-            /* Stylizacja sekcji jako nagłówków */
-            .section-header td {
-                margin-top: 20px;
-                border-radius: 4px;
-            }
-
-            /* Wiersze główne jako karty */
+            .section-header td { margin-top: 20px; border-radius: 4px; }
+            
             .cost-table tr:not(.detail-row):not(.section-header) {
                 background: #252525;
                 margin-bottom: 10px;
@@ -306,28 +327,17 @@
                 padding-bottom: 10px;
             }
 
-            /* Komórki wewnątrz karty */
-            .cost-table td {
-                padding: 10px 15px;
-                border-bottom: none; /* Usuwamy linie tabeli */
-                background: transparent !important;
-            }
-
-            /* Pierwsza komórka (Tytuł) */
-            .cost-table td:nth-child(1) {
-                border-bottom: 1px solid rgba(255,255,255,0.05);
-            }
-
-            /* Ceny na mobile */
-            .cost-table td:nth-child(2), 
-            .cost-table td:nth-child(3) {
+            .cost-table td { padding: 10px 15px; border-bottom: none; background: transparent !important; }
+            .cost-table td:nth-child(1) { border-bottom: 1px solid rgba(255,255,255,0.05); }
+            
+            .cost-table td:nth-child(2), .cost-table td:nth-child(3) {
                 display: inline-block;
-                width: 48%; /* Obok siebie */
+                width: 48%;
                 vertical-align: top;
             }
 
             .cost-table td:nth-child(2):before {
-                content: "Rynkowo:";
+                content: attr(data-label-market);
                 display: block;
                 font-size: 10px;
                 color: #666;
@@ -336,7 +346,7 @@
             }
 
             .cost-table td:nth-child(3):before {
-                content: "Moja cena:";
+                content: attr(data-label-friend);
                 display: block;
                 font-size: 10px;
                 color: var(--accent-green);
@@ -344,92 +354,81 @@
                 margin-bottom: 2px;
             }
 
-            /* Szczegóły rozwijane */
-            .detail-content {
-                padding: 15px;
-                font-size: 12px;
-            }
-
-            /* Grid Analizy na jedną kolumnę */
+            .detail-content { padding: 15px; font-size: 12px; }
             .analysis-grid { grid-template-columns: 1fr; }
-
-            /* Wykres na mobile */
-            .chart-row {
-                grid-template-columns: 1fr; /* Stack */
-                gap: 5px;
-                margin-bottom: 20px;
-            }
+            .chart-row { grid-template-columns: 1fr; gap: 5px; margin-bottom: 20px; }
             .chart-label { text-align: left; margin-bottom: 5px; }
-
-            .total-box {
-                padding: 20px;
-                text-align: center;
-            }
+            .total-box { padding: 20px; text-align: center; }
             .total-value { font-size: 28px; }
         }
 
         @media print {
             body { background: #fff; color: #000; }
             .container { box-shadow: none; border: none; width: 100%; padding: 0; }
-            .print-btn, .expand-icon { display: none; }
+            .print-btn, .expand-icon, .lang-switcher { display: none; }
             .detail-row td { display: table-cell !important; background: #fff; color: #000; } 
             .detail-content { color: #333; border-left: 2px solid #000; }
-            .cost-table th { background: #eee; color: #000; display: table-cell !important; } /* Przywróć nagłówki w druku */
-            .cost-table { display: table; } /* Przywróć tabelę w druku */
+            .cost-table th { background: #eee; color: #000; display: table-cell !important; }
+            .cost-table { display: table; }
             .cost-table tbody, .cost-table tr, .cost-table td { display: table-row-group; width: auto; }
             .cost-table tr { display: table-row; }
             .cost-table td { display: table-cell; border-bottom: 1px solid #ccc; background: #fff !important; width: auto !important; }
-            .cost-table td:nth-child(2):before, .cost-table td:nth-child(3):before { content: none; } /* Usuń etykiety mobilne w druku */
-            
+            .cost-table td:nth-child(2):before, .cost-table td:nth-child(3):before { content: none; }
             .price-free { border: 1px solid #000; color: #000; background: none; }
             .total-box { background: #fff; border: 2px solid #000; color: #000; }
             .total-value { color: #000; }
+            .market-analysis a { color: #000; }
         }
     </style>
 </head>
 <body>
 
+<div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLanguage('pl')" id="btn-pl">PL</button>
+    <button class="lang-btn" onclick="setLanguage('en')" id="btn-en">ENG</button>
+</div>
+
 <div class="container">
     
     <header>
         <div>
-            <h1>Kosztorys Wdrożeniowy</h1>
-            <p class="subtitle">System Master Data (ETL) & Integracja Dropshipping</p>
+            <h1 data-i18n="doc_title">Kosztorys Wdrożeniowy</h1>
+            <p class="subtitle" data-i18n="doc_subtitle">System Master Data (ETL) & Integracja Dropshipping</p>
         </div>
         <div class="meta-box">
-            <div style="margin-bottom: 5px; color: #aaa;">Data: <strong style="color: #fff">04.12.2025</strong></div>
-            <div style="margin-bottom: 5px;">Status: <span class="status-badge">Wycena Preferencyjna (Min)</span></div>
-            <button class="print-btn" onclick="window.print()">🖨️ Drukuj / PDF</button>
+            <div style="margin-bottom: 5px; color: #aaa;"><span data-i18n="date_label">Data:</span> <strong style="color: #fff">04.12.2025</strong></div>
+            <div style="margin-bottom: 5px;"><span data-i18n="status_label">Status:</span> <span class="status-badge" data-i18n="status_val">Wycena Preferencyjna (Min)</span></div>
+            <button class="print-btn" onclick="window.print()" data-i18n="print_btn">🖨️ Drukuj / PDF</button>
         </div>
     </header>
 
-    <p style="font-size: 12px; color: #666; margin-bottom: 20px;">* Kliknij w wiersz tabeli (lub "+" na telefonie), aby zobaczyć szczegóły techniczne modułu.</p>
+    <p style="font-size: 12px; color: #666; margin-bottom: 20px;" data-i18n="hint">* Kliknij w wiersz tabeli (lub "+" na telefonie), aby zobaczyć szczegóły techniczne modułu.</p>
 
     <table class="cost-table">
         <thead>
             <tr>
-                <th style="width: 50%">Moduł i Zakres Prac</th>
-                <th style="width: 25%">Wycena Rynkowa</th>
-                <th style="width: 25%">Cena Po-Znajomości</th>
+                <th style="width: 50%" data-i18n="th_scope">Moduł i Zakres Prac</th>
+                <th style="width: 25%" data-i18n="th_market">Wycena Rynkowa</th>
+                <th style="width: 25%" data-i18n="th_friend">Cena Minimalna</th>
             </tr>
         </thead>
         <tbody>
             
-            <tr class="section-header"><td colspan="3">I. INTEGRACJA DANYCH (BACKEND ETL)</td></tr>
+            <tr class="section-header"><td colspan="3" data-i18n="sec_1_title">I. INTEGRACJA DANYCH (BACKEND ETL)</td></tr>
             <tr onclick="toggleRow(this)">
-                <td>
-                    <span class="item-title">System ETL & Kategoryzator <span class="expand-icon">+</span></span>
-                    <div class="item-desc">Silnik integrujący dane z hurtowni. Merge plików, auto-kategoryzacja (98%), czyszczenie danych.</div>
+                <td data-label-market="Rynkowo:" data-label-friend="Moja Cena:">
+                    <span class="item-title"><span data-i18n="etl_title">System ETL & Kategoryzator</span> <span class="expand-icon">+</span></span>
+                    <div class="item-desc" data-i18n="etl_desc">Silnik integrujący dane z hurtowni. Merge plików, auto-kategoryzacja (98%), czyszczenie danych.</div>
                     <div class="tech-tags"><span class="tag">Python</span><span class="tag">Pandas</span></div>
                 </td>
-                <td><span class="price-market">10 500 PLN</span></td>
-                <td><span class="price-friend">7 500 PLN</span></td>
+                <td><span class="price-market" data-i18n="p_etl_m">10 500 PLN</span></td>
+                <td><span class="price-friend" data-i18n="p_etl_f">7 500 PLN</span></td>
             </tr>
             <tr class="detail-row">
                 <td colspan="3">
                     <div class="detail-content">
-                        <strong>Szczegóły techniczne:</strong>
-                        <ul>
+                        <strong data-i18n="det_header">Szczegóły techniczne:</strong>
+                        <ul data-i18n="etl_details">
                             <li><strong>Automatyzacja FTP:</strong> Pobieranie cenników, stanów, parametrów i kaucji z serwerów AP.</li>
                             <li><strong>Logic Merge:</strong> Algorytm łączący wiele źródeł Excel/CSV w jedną spójną bazę ("Master Data").</li>
                             <li><strong>Auto-Kategoryzacja:</strong> Silnik regułowy (rules.py) przypisujący produkty do drzewa kategorii sklepu.</li>
@@ -440,21 +439,21 @@
                 </td>
             </tr>
 
-            <tr class="section-header"><td colspan="3">II. WYDAJNOŚĆ I IMPORT (WOOCOMMERCE)</td></tr>
+            <tr class="section-header"><td colspan="3" data-i18n="sec_2_title">II. WYDAJNOŚĆ I IMPORT (WOOCOMMERCE)</td></tr>
             <tr onclick="toggleRow(this)">
-                <td>
-                    <span class="item-title">Turbo Importer & Daily Sync <span class="expand-icon">+</span></span>
-                    <div class="item-desc">Dedykowany skrypt PHP. Optymalizacja SQL (Transakcje), obsługa 10k+ produktów, CRON.</div>
+                <td data-label-market="Rynkowo:" data-label-friend="Moja Cena:">
+                    <span class="item-title"><span data-i18n="imp_title">Turbo Importer & Daily Sync</span> <span class="expand-icon">+</span></span>
+                    <div class="item-desc" data-i18n="imp_desc">Dedykowany skrypt PHP. Optymalizacja SQL (Transakcje), obsługa 10k+ produktów, CRON.</div>
                     <div class="tech-tags"><span class="tag">PHP 8</span><span class="tag">SQL Opt.</span></div>
                 </td>
-                <td><span class="price-market">7 000 PLN</span></td>
-                <td><span class="price-friend">4 500 PLN</span></td>
+                <td><span class="price-market" data-i18n="p_imp_m">7 000 PLN</span></td>
+                <td><span class="price-friend" data-i18n="p_imp_f">4 500 PLN</span></td>
             </tr>
             <tr class="detail-row">
                 <td colspan="3">
                     <div class="detail-content">
-                        <strong>Szczegóły techniczne:</strong>
-                        <ul>
+                        <strong data-i18n="det_header">Szczegóły techniczne:</strong>
+                        <ul data-i18n="imp_details">
                             <li><strong>Transakcje SQL:</strong> Bezpieczny zapis (START TRANSACTION / COMMIT) gwarantujący spójność bazy.</li>
                             <li><strong>RAM Cache:</strong> Buforowanie ID kategorii i SKU w pamięci operacyjnej dla maksymalnej szybkości.</li>
                             <li><strong>FIFU Integration:</strong> Obsługa zewnętrznych URL do zdjęć (oszczędność miejsca na serwerze).</li>
@@ -464,21 +463,21 @@
                 </td>
             </tr>
 
-            <tr class="section-header"><td colspan="3">III. PLUGIN DROPSHIPPINGOWY (B2B)</td></tr>
+            <tr class="section-header"><td colspan="3" data-i18n="sec_3_title">III. PLUGIN DROPSHIPPINGOWY (B2B)</td></tr>
             <tr onclick="toggleRow(this)">
-                <td>
-                    <span class="item-title">AP Dropshipping Integration (Full) <span class="expand-icon">+</span></span>
-                    <div class="item-desc">Integracja API Auto Partner. Zamówienia, Tracking, Mixed Cart logic, Walidacja Live.</div>
+                <td data-label-market="Rynkowo:" data-label-friend="Moja Cena:">
+                    <span class="item-title"><span data-i18n="plg_title">AP Dropshipping Integration (Full)</span> <span class="expand-icon">+</span></span>
+                    <div class="item-desc" data-i18n="plg_desc">Integracja API Auto Partner. Zamówienia, Tracking, Mixed Cart logic, Walidacja Live.</div>
                     <div class="tech-tags"><span class="tag">REST API</span><span class="tag">WP Hooks</span></div>
                 </td>
-                <td><span class="price-market">21 500 PLN</span></td>
-                <td><span class="price-friend">14 000 PLN</span></td>
+                <td><span class="price-market" data-i18n="p_plg_m">21 500 PLN</span></td>
+                <td><span class="price-friend" data-i18n="p_plg_f">14 000 PLN</span></td>
             </tr>
             <tr class="detail-row">
                 <td colspan="3">
                     <div class="detail-content">
-                        <strong>Szczegóły techniczne:</strong>
-                        <ul>
+                        <strong data-i18n="det_header">Szczegóły techniczne:</strong>
+                        <ul data-i18n="plg_details">
                             <li><strong>Mixed Cart Logic:</strong> Inteligentna filtracja – do API hurtowni trafiają TYLKO ich produkty.</li>
                             <li><strong>Live Stock Check:</strong> Blokada zakupu w checkout, jeśli API hurtowni zwróci brak towaru.</li>
                             <li><strong>Safety:</strong> Obsługa błędów krytycznych (np. limit kupiecki 05/02) i powiadomienia admina.</li>
@@ -488,24 +487,24 @@
                 </td>
             </tr>
 
-            <tr class="section-header"><td colspan="3">IV. INFRASTRUKTURA & GRATISY</td></tr>
+            <tr class="section-header"><td colspan="3" data-i18n="sec_4_title">IV. INFRASTRUKTURA & GRATISY</td></tr>
             <tr onclick="toggleRow(this)">
-                <td>
-                    <span class="item-title">Optymalizacja Speed & Redis <span class="expand-icon">+</span></span>
-                    <div class="item-desc">Konfiguracja cache Redis pod duży sklep. Tuning bazy danych. Migracja hostingu w cenie.</div>
-                    <div class="tech-tags"><span class="tag">DevOps</span><span class="tag">Gratis</span></div>
+                <td data-label-market="Rynkowo:" data-label-friend="Moja Cena:">
+                    <span class="item-title"><span data-i18n="inf_title">Optymalizacja Speed & Redis</span> <span class="expand-icon">+</span></span>
+                    <div class="item-desc" data-i18n="inf_desc">Konfiguracja cache Redis pod duży sklep. Tuning bazy danych. Migracja hostingu w cenie.</div>
+                    <div class="tech-tags"><span class="tag">DevOps</span><span class="tag" data-i18n="tag_free">Gratis</span></div>
                 </td>
-                <td><span class="price-market">5 000 PLN</span></td>
+                <td><span class="price-market" data-i18n="p_inf_m">5 000 PLN</span></td>
                 <td>
-                    <span class="price-friend">500 PLN</span>
-                    <span style="font-size:10px; color:#aaa; display:block;">(Symboliczna stawka)</span>
+                    <span class="price-friend" data-i18n="p_inf_f">500 PLN</span>
+                    <span style="font-size:10px; color:#aaa; display:block;" data-i18n="inf_note">(Symboliczna stawka)</span>
                 </td>
             </tr>
             <tr class="detail-row">
                 <td colspan="3">
                     <div class="detail-content">
-                        <strong>Zakres prac:</strong>
-                        <ul>
+                        <strong data-i18n="det_scope">Zakres prac:</strong>
+                        <ul data-i18n="inf_details">
                             <li><strong>MIGRACJA HOSTINGOWA:</strong> <span class="price-free">GRATIS</span> (Wykonana w ramach wsparcia hostingu).</li>
                             <li><strong>Redis Object Cache:</strong> Konfiguracja serwera Redis dla przyspieszenia backendu WP.</li>
                             <li><strong>Konsultacje:</strong> Doradztwo technologiczne i przygotowanie środowiska.</li>
@@ -520,51 +519,51 @@
 
     <div class="summary-container">
         <div class="total-box">
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">WARTOŚĆ RYNKOWA: <span style="text-decoration: line-through; color: #ff5252;">44 000 PLN</span></div>
-            <div style="font-size: 14px; color: #fff; margin-bottom: 5px;">SUMA (FRIEND RATE):</div>
-            <div class="total-value">26 500 PLN</div>
-            <div class="ultra-discount">Oszczędność: ~17 500 PLN (-40%)</div>
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;"><span data-i18n="sum_market">WARTOŚĆ RYNKOWA:</span> <span style="text-decoration: line-through; color: #ff5252;" data-i18n="sum_m_val">44 000 PLN</span></div>
+            <div style="font-size: 14px; color: #fff; margin-bottom: 5px;" data-i18n="sum_friend">SUMA (FRIEND RATE):</div>
+            <div class="total-value" data-i18n="sum_f_val">26 500 PLN</div>
+            <div class="ultra-discount" data-i18n="save_val">Oszczędność: ~17 500 PLN (-40%)</div>
         </div>
     </div>
 
     <div class="market-analysis">
-        <div class="analysis-header">Dlaczego taka cena? (Analiza Rynkowa)</div>
-        <div class="analysis-intro">
+        <div class="analysis-header" data-i18n="ana_header">Dlaczego taka cena? (Analiza Rynkowa)</div>
+        <div class="analysis-intro" data-i18n="ana_intro">
             Wycena oparta na analizie kosztów dedykowanych rozwiązań B2B w Polsce. Jak podają źródła branżowe (np. <a href="https://less-code.com/pl/blog/koszty-zaprogramowania-wtyczki-wordpress/" target="_blank">Less-Code.com</a>, TheNewLook, WPBeginner), koszt stworzenia dedykowanej, bezpiecznej wtyczki e-commerce to inwestycja rzędu kilkunastu tysięcy złotych.
         </div>
 
         <div class="analysis-grid">
             <div class="analysis-card">
-                <h4>1. Koszt Programisty (Backend)</h4>
-                <p>Standardowa stawka rynkowa za Senior WordPress Developera (PHP/React) w Polsce w 2024/25 to <strong>140 - 200 PLN netto/h</strong>. Przy projekcie zajmującym ~200h (Research, ETL, API, Testy), sam koszt roboczogodzin rynkowo wynosi ~30 000 PLN.</p>
+                <h4 data-i18n="ana_1_title">1. Koszt Programisty (Backend)</h4>
+                <p data-i18n="ana_1_desc">Standardowa stawka rynkowa za Senior WordPress Developera (PHP/React) w Polsce w 2024/25 to <strong>140 - 200 PLN netto/h</strong>. Przy projekcie zajmującym ~200h (Research, ETL, API, Testy), sam koszt roboczogodzin rynkowo wynosi ~30 000 PLN.</p>
             </div>
             <div class="analysis-card">
-                <h4>2. Dedykowane vs Gotowe</h4>
-                <p>To nie jest "gotowa wtyczka za 50$". To system pisany pod specyficzne API Auto Partner. Agencje wyceniają dedykowane integracje B2B (API, stany, zamówienia) w widełkach <strong>15 000 - 25 000 PLN</strong> za sam moduł integracji.</p>
+                <h4 data-i18n="ana_2_title">2. Dedykowane vs Gotowe</h4>
+                <p data-i18n="ana_2_desc">To nie jest "gotowa wtyczka za 50$". To system pisany pod specyficzne API Auto Partner. Agencje wyceniają dedykowane integracje B2B (API, stany, zamówienia) w widełkach <strong>15 000 - 25 000 PLN</strong> za sam moduł integracji.</p>
             </div>
         </div>
 
         <div class="chart-container">
-            <div style="margin-bottom: 15px; font-size: 13px; color: #fff;">Porównanie stawek godzinowych (Rynek PL 2024/25):</div>
+            <div style="margin-bottom: 15px; font-size: 13px; color: #fff;" data-i18n="chart_title">Porównanie stawek godzinowych (Rynek PL 2024/25):</div>
 
             <div class="chart-row">
                 <div class="chart-label">Software House</div>
                 <div class="chart-bar-bg">
-                    <div class="chart-bar bar-red" data-width="100%">250-350 PLN/h</div>
+                    <div class="chart-bar bar-red" data-width="100%" data-i18n="bar_1">250-350 PLN/h</div>
                 </div>
             </div>
 
             <div class="chart-row">
                 <div class="chart-label">Senior Freelancer</div>
                 <div class="chart-bar-bg">
-                    <div class="chart-bar bar-orange" data-width="65%">180-250 PLN/h</div>
+                    <div class="chart-bar bar-orange" data-width="65%" data-i18n="bar_2">180-250 PLN/h</div>
                 </div>
             </div>
 
             <div class="chart-row">
-                <div class="chart-label" style="color: var(--accent-green)">Moja Oferta</div>
+                <div class="chart-label" style="color: var(--accent-green)" data-i18n="bar_3_lbl">Moja Oferta</div>
                 <div class="chart-bar-bg" style="border: 1px solid var(--accent-green)">
-                    <div class="chart-bar bar-green" data-width="35%">~115 PLN/h</div>
+                    <div class="chart-bar bar-green" data-width="35%" data-i18n="bar_3">~115 PLN/h</div>
                 </div>
             </div>
         </div>
@@ -573,14 +572,184 @@
 </div>
 
 <script>
-    // Logika rozwijania wierszy
+    const translations = {
+        pl: {
+            doc_title: "Kosztorys Wdrożeniowy",
+            doc_subtitle: "System Master Data (ETL) & Integracja Dropshipping",
+            date_label: "Data:",
+            status_label: "Status:",
+            status_val: "Wycena Preferencyjna (Min)",
+            print_btn: "🖨️ Drukuj / PDF",
+            hint: "* Kliknij w wiersz tabeli (lub \"+\" na telefonie), aby zobaczyć szczegóły techniczne modułu.",
+            th_scope: "Moduł i Zakres Prac",
+            th_market: "Wycena Rynkowa",
+            th_friend: "Cena Minimalna",
+            sec_1_title: "I. INTEGRACJA DANYCH (BACKEND ETL)",
+            etl_title: "System ETL & Kategoryzator",
+            etl_desc: "Silnik integrujący dane z hurtowni. Merge plików, auto-kategoryzacja (98%), czyszczenie danych.",
+            p_etl_m: "10 500 PLN",
+            p_etl_f: "7 500 PLN",
+            det_header: "Szczegóły techniczne:",
+            etl_details: `<li><strong>Automatyzacja FTP:</strong> Pobieranie cenników, stanów, parametrów i kaucji z serwerów AP.</li>
+                          <li><strong>Logic Merge:</strong> Algorytm łączący wiele źródeł Excel/CSV w jedną spójną bazę ("Master Data").</li>
+                          <li><strong>Auto-Kategoryzacja:</strong> Silnik regułowy (rules.py) przypisujący produkty do drzewa kategorii sklepu.</li>
+                          <li><strong>Media:</strong> Integracja bazy produktowej ze zdjęciami (zdjecia.xlsx) i opisami.</li>
+                          <li><strong>Export:</strong> Generowanie plików wynikowych z podziałem (Chunking) dla WooCommerce.</li>`,
+            sec_2_title: "II. WYDAJNOŚĆ I IMPORT (WOOCOMMERCE)",
+            imp_title: "Turbo Importer & Daily Sync",
+            imp_desc: "Dedykowany skrypt PHP. Optymalizacja SQL (Transakcje), obsługa 10k+ produktów, CRON.",
+            p_imp_m: "7 000 PLN",
+            p_imp_f: "4 500 PLN",
+            imp_details: `<li><strong>Transakcje SQL:</strong> Bezpieczny zapis (START TRANSACTION / COMMIT) gwarantujący spójność bazy.</li>
+                          <li><strong>RAM Cache:</strong> Buforowanie ID kategorii i SKU w pamięci operacyjnej dla maksymalnej szybkości.</li>
+                          <li><strong>FIFU Integration:</strong> Obsługa zewnętrznych URL do zdjęć (oszczędność miejsca na serwerze).</li>
+                          <li><strong>Harmonogram:</strong> Bezobsługowa aktualizacja stanów i cen codziennie w nocy.</li>`,
+            sec_3_title: "III. PLUGIN DROPSHIPPINGOWY (B2B)",
+            plg_title: "AP Dropshipping Integration (Full)",
+            plg_desc: "Integracja API Auto Partner. Zamówienia, Tracking, Mixed Cart logic, Walidacja Live.",
+            p_plg_m: "21 500 PLN",
+            p_plg_f: "14 000 PLN",
+            plg_details: `<li><strong>Mixed Cart Logic:</strong> Inteligentna filtracja – do API hurtowni trafiają TYLKO ich produkty.</li>
+                          <li><strong>Live Stock Check:</strong> Blokada zakupu w checkout, jeśli API hurtowni zwróci brak towaru.</li>
+                          <li><strong>Safety:</strong> Obsługa błędów krytycznych (np. limit kupiecki 05/02) i powiadomienia admina.</li>
+                          <li><strong>Smart Tracking:</strong> Automatyczne generowanie linków śledzenia InPost/DPD w mailach do klienta.</li>`,
+            sec_4_title: "IV. INFRASTRUKTURA & GRATISY",
+            inf_title: "Optymalizacja Speed & Redis",
+            inf_desc: "Konfiguracja cache Redis pod duży sklep. Tuning bazy danych. Migracja hostingu w cenie.",
+            tag_free: "Gratis",
+            p_inf_m: "5 000 PLN",
+            p_inf_f: "500 PLN",
+            inf_note: "(Symboliczna stawka)",
+            det_scope: "Zakres prac:",
+            inf_details: `<li><strong>MIGRACJA HOSTINGOWA:</strong> <span class="price-free">GRATIS</span> (Wykonana w ramach wsparcia hostingu).</li>
+                          <li><strong>Redis Object Cache:</strong> Konfiguracja serwera Redis dla przyspieszenia backendu WP.</li>
+                          <li><strong>Konsultacje:</strong> Doradztwo technologiczne i przygotowanie środowiska.</li>
+                          <li><strong>Ultra Rabat:</strong> Zjazd z ceny rynkowej (5000 PLN) do symbolicznej kwoty za konfigurację.</li>`,
+            sum_market: "WARTOŚĆ RYNKOWA:",
+            sum_m_val: "44 000 PLN",
+            sum_friend: "SUMA (FRIEND RATE):",
+            sum_f_val: "26 500 PLN",
+            save_val: "Oszczędność: ~17 500 PLN (-40%)",
+            ana_header: "Dlaczego taka cena? (Analiza Rynkowa)",
+            ana_intro: `Wycena oparta na analizie kosztów dedykowanych rozwiązań B2B w Polsce. Jak podają źródła branżowe (np. <a href="https://less-code.com/pl/blog/koszty-zaprogramowania-wtyczki-wordpress/" target="_blank">Less-Code.com</a>, TheNewLook, WPBeginner), koszt stworzenia dedykowanej, bezpiecznej wtyczki e-commerce to inwestycja rzędu kilkunastu tysięcy złotych.`,
+            ana_1_title: "1. Koszt Programisty (Backend)",
+            ana_1_desc: "Standardowa stawka rynkowa za Senior WordPress Developera (PHP/React) w Polsce w 2024/25 to <strong>140 - 200 PLN netto/h</strong>. Przy projekcie zajmującym ~200h (Research, ETL, API, Testy), sam koszt roboczogodzin rynkowo wynosi ~30 000 PLN.",
+            ana_2_title: "2. Dedykowane vs Gotowe",
+            ana_2_desc: "To nie jest \"gotowa wtyczka za 50$\". To system pisany pod specyficzne API Auto Partner. Agencje wyceniają dedykowane integracje B2B (API, stany, zamówienia) w widełkach <strong>15 000 - 25 000 PLN</strong> za sam moduł integracji.",
+            chart_title: "Porównanie stawek godzinowych (Rynek PL 2024/25):",
+            bar_1: "250-350 PLN/h",
+            bar_2: "180-250 PLN/h",
+            bar_3_lbl: "Moja Oferta",
+            bar_3: "~115 PLN/h"
+        },
+        en: {
+            doc_title: "Implementation Cost Estimate",
+            doc_subtitle: "Master Data System (ETL) & Dropshipping Integration",
+            date_label: "Date:",
+            status_label: "Status:",
+            status_val: "Preferential Rate (Min)",
+            print_btn: "🖨️ Print / PDF",
+            hint: "* Click on a table row (or \"+\" on mobile) to see technical details.",
+            th_scope: "Module & Scope",
+            th_market: "Market Value",
+            th_friend: "Minimum Price",
+            sec_1_title: "I. DATA INTEGRATION (BACKEND ETL)",
+            etl_title: "ETL System & Categorizer",
+            etl_desc: "Wholesaler data integration engine. File merge, auto-categorization (98%), data cleaning.",
+            p_etl_m: "€2,450",
+            p_etl_f: "€1,750",
+            det_header: "Technical Details:",
+            etl_details: `<li><strong>FTP Automation:</strong> Fetching price lists, stock, params, and deposits from AP servers.</li>
+                          <li><strong>Logic Merge:</strong> Algorithm merging multiple Excel/CSV sources into one cohesive base ("Master Data").</li>
+                          <li><strong>Auto-Categorization:</strong> Rule engine (rules.py) assigning products to store category tree.</li>
+                          <li><strong>Media:</strong> Integration of product database with images (zdjecia.xlsx) and descriptions.</li>
+                          <li><strong>Export:</strong> Generating result files with Chunking for WooCommerce.</li>`,
+            sec_2_title: "II. PERFORMANCE & IMPORT (WOOCOMMERCE)",
+            imp_title: "Turbo Importer & Daily Sync",
+            imp_desc: "Dedicated PHP script. SQL Optimization (Transactions), handling 10k+ products, CRON.",
+            p_imp_m: "€1,650",
+            p_imp_f: "€1,050",
+            imp_details: `<li><strong>SQL Transactions:</strong> Safe writing (START TRANSACTION / COMMIT) ensuring DB consistency.</li>
+                          <li><strong>RAM Cache:</strong> Buffering Category IDs and SKUs in memory for max speed.</li>
+                          <li><strong>FIFU Integration:</strong> Handling external image URLs (server space saving).</li>
+                          <li><strong>Schedule:</strong> Maintenance-free stock and price updates nightly.</li>`,
+            sec_3_title: "III. DROPSHIPPING PLUGIN (B2B)",
+            plg_title: "AP Dropshipping Integration (Full)",
+            plg_desc: "Auto Partner API Integration. Orders, Tracking, Mixed Cart logic, Live Validation.",
+            p_plg_m: "€5,000",
+            p_plg_f: "€3,250",
+            plg_details: `<li><strong>Mixed Cart Logic:</strong> Smart filtering – ONLY AP products are sent to their API.</li>
+                          <li><strong>Live Stock Check:</strong> Blocking checkout if wholesaler API returns out-of-stock.</li>
+                          <li><strong>Safety:</strong> Handling critical errors (e.g., credit limit 05/02) and admin alerts.</li>
+                          <li><strong>Smart Tracking:</strong> Auto-generating InPost/DPD tracking links in client emails.</li>`,
+            sec_4_title: "IV. INFRASTRUCTURE & FREEBIES",
+            inf_title: "Speed Optimization & Redis",
+            inf_desc: "Redis cache config for large store. DB tuning. Hosting migration included.",
+            tag_free: "Free",
+            p_inf_m: "€1,150",
+            p_inf_f: "€120",
+            inf_note: "(Symbolic rate)",
+            det_scope: "Scope of work:",
+            inf_details: `<li><strong>HOSTING MIGRATION:</strong> <span class="price-free">FREE</span> (Performed under hosting support).</li>
+                          <li><strong>Redis Object Cache:</strong> Redis server config for WP backend acceleration.</li>
+                          <li><strong>Consulting:</strong> Tech consulting and environment preparation.</li>
+                          <li><strong>Ultra Discount:</strong> Price drop from market value (€1,150) to symbolic setup fee.</li>`,
+            sum_market: "MARKET VALUE:",
+            sum_m_val: "€10,250",
+            sum_friend: "TOTAL (FRIEND RATE):",
+            sum_f_val: "€6,170",
+            save_val: "Savings: ~€4,080 (-40%)",
+            ana_header: "Why this price? (Market Analysis)",
+            ana_intro: `Estimate based on costs of dedicated B2B solutions. As per industry sources (e.g., <a href="https://less-code.com/pl/blog/koszty-zaprogramowania-wtyczki-wordpress/" target="_blank">Less-Code.com</a>, WPBeginner), creating a secure, dedicated e-commerce plugin is an investment of several thousand euros.`,
+            ana_1_title: "1. Developer Cost (Backend)",
+            ana_1_desc: "Standard market rate for a Senior WordPress Developer (PHP/React) in 2024/25 is <strong>€35 - €50 net/h</strong>. For a project taking ~200h (Research, ETL, API, Tests), labor cost alone is ~€7,000.",
+            ana_2_title: "2. Dedicated vs Ready-made",
+            ana_2_desc: "This isn't a \"$50 plugin\". It's a system written for specific Auto Partner API. Agencies price dedicated B2B integrations (API, stock, orders) between <strong>€3,500 - €6,000</strong> for the integration module alone.",
+            chart_title: "Hourly Rate Comparison (Market 2024/25):",
+            bar_1: "€60-80 /h",
+            bar_2: "€40-60 /h",
+            bar_3_lbl: "My Offer",
+            bar_3: "~€27 /h"
+        }
+    };
+
+    function setLanguage(lang) {
+        // Switch buttons
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + lang).classList.add('active');
+
+        // Update Text
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) {
+                el.innerHTML = translations[lang][key];
+            }
+        });
+        
+        // Update Mobile Labels (via CSS variable or inline style hack)
+        // Since pseudo-elements can't be changed via JS easily, we rely on the logic 
+        // that mobile view is strictly visual. 
+        // A cleaner way for mobile labels:
+        const rows = document.querySelectorAll('td[data-label-market]');
+        rows.forEach(row => {
+            if(lang === 'pl') {
+                row.setAttribute('data-label-market', 'Rynkowo:');
+                row.setAttribute('data-label-friend', 'Moja Cena:');
+            } else {
+                row.setAttribute('data-label-market', 'Market:');
+                row.setAttribute('data-label-friend', 'My Price:');
+            }
+        });
+    }
+
+    // Toggle Row Logic
     function toggleRow(row) {
         const nextRow = row.nextElementSibling;
         const icon = row.querySelector('.expand-icon');
         
         if (nextRow && nextRow.classList.contains('detail-row')) {
             const cell = nextRow.querySelector('td');
-            // Check computed style for safety
             const displayStyle = window.getComputedStyle(cell).display;
             
             if (displayStyle === 'block' || displayStyle === 'table-cell') {
@@ -588,7 +757,6 @@
                 if(icon) icon.innerHTML = '+';
                 row.style.background = '';
             } else {
-                // Determine display type based on screen width
                 if (window.innerWidth <= 768) {
                     cell.style.display = 'block';
                 } else {
@@ -601,7 +769,7 @@
         }
     }
 
-    // Animacja wykresu
+    // Init Chart Animation
     setTimeout(() => {
         document.querySelectorAll('.chart-bar').forEach(bar => {
             bar.style.width = bar.getAttribute('data-width');
